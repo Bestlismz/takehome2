@@ -14,10 +14,100 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-
+# TODO: Design and implement your pipeline
 jobs:
-  # TODO: Design and implement your pipeline
-  placeholder:
+  # build image และรัน eval suite เป็น quality gate
+  # ทุก push (PR หรือ main) ต้องผ่านก่อนจึงจะ proceed ต่อได้
+  build-and-eval:
     runs-on: ubuntu-latest
     steps:
-      - run: exit 1
+      - uses: actions/checkout@v4
+
+      - name: Build agent-api image
+        # ติด tag ด้วย commit SHA ทำให้ทุก image trace กลับไปหา source commit ได้
+        run: docker build -t agent-api:${{ github.sha }} ./agent-api
+
+      - name: Start agent-api container
+        run: |
+          docker run -d --name agent-api-test \
+            -p 8080:8080 \
+            -e PROMPT_VERSION=v1.0.0 \
+            agent-api:${{ github.sha }}
+
+      - name: Wait for API health check
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8080/healthz; then
+              echo "API is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API never became healthy" && exit 1
+
+      - name: Build eval-runner image
+        run: docker build -t eval-runner:${{ github.sha }} ./eval-runner
+
+      # eval-runner คือ quality gate: golden accuracy >= 90%, golden rejection rate <= 5%,
+      # adversarial rejection rate >= 60% ถ้า eval fail pipeline จะหยุดและ block merge
+      - name: Run eval suite (quality gate)
+        run: |
+          docker run --rm \
+            --network host \
+            -e AGENT_API_URL=http://localhost:8080 \
+            -e MIN_GOLDEN_ACCURACY=0.90 \
+            -e MAX_GOLDEN_REJECTION_RATE=0.05 \
+            -e MIN_ADVERSARIAL_REJECTION_RATE=0.60 \
+            eval-runner:${{ github.sha }}
+
+      - name: Stop test container
+        if: always()
+        run: docker rm -f agent-api-test || true
+
+  # deploy job run เฉพาะตอน push ไปที่ main เท่านั้น (ไม่รันบน PR)
+  # Update deployment/manifest.yml ด้วย commit SHA เพื่อให้ทุก deploy ตรวจสอบย้อนหลังได้ ว่า production รัน commit ไหน ใครเป็นคน deploy และเมื่อไหร่
+  deploy:
+    needs: build-and-eval
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # ใช้ token ที่มีสิทธิ์ push กลับไปที่ repo ได้
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update deployment manifest with commit SHA
+        # Python snippet robust กว่า sed สำหรับแก้ YAML หลายบรรทัด
+        run: |
+          python3 - <<'EOF'
+          import re
+          from datetime import datetime
+
+          sha = "${{ github.sha }}"
+          timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+          actor = "${{ github.actor }}"
+
+          with open("deployment/manifest.yml", "r") as f:
+              content = f.read()
+
+          # อัปเดต image_tag เป็น commit SHA ปัจจุบัน
+          content = re.sub(r'image_tag: ".*"', f'image_tag: "{sha}"', content)
+
+          # เพิ่ม history entry ใหม่ไว้ก่อน placeholder เพื่อให้ history สะสมต่อเนื่องทุก deploy
+          new_entry = f"# | {timestamp} | {sha[:8]} | {actor} |"
+          content = content.replace(
+              "# | (will be populated by CD pipeline)  |",
+              f"{new_entry}\n# | (will be populated by CD pipeline)  |"
+          )
+
+          with open("deployment/manifest.yml", "w") as f:
+              f.write(content)
+          EOF
+
+      - name: Commit and push manifest update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deployment/manifest.yml
+          git commit -m "chore: deploy ${{ github.sha }} to production [skip ci]"
+          git push

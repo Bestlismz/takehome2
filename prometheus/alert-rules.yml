@@ -9,29 +9,73 @@ groups:
         annotations:
           summary: "Agent API is down"
           description: "The agent API has been unreachable for more than 1 minute."
-
       # TODO: Implement alerting for abnormal rejection rates
       # Consider: What rejection rate is "normal" for this system?
       #           How do you distinguish a real problem from noise?
       # 
       # Observe the running system before setting thresholds.
+      # เหตุผลที่เลือก threshold: traffic-generator ตั้งค่า REJECTION_MIX_RATIO=0.15 ดังนั้น
+      # rejection rate ปกติอยู่ที่ ~15% alert ที่ 30% (2x ของปกติ) ต้องยืนนาน 5 นาที
+      # window 5 นาทีกรอง transient burst ที่หายไปเร็ว ลด alert fatigue
       - alert: HighRejectionRate
-        expr: vector(0) > 1
+        expr: >
+          (
+            sum(rate(agent_rejections_total{route="/ask"}[5m]))
+            /
+            sum(rate(agent_requests_total{route="/ask"}[5m]))
+          ) > 0.30
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "TODO"
-          description: "TODO"
-
       # TODO: Implement alerting for sudden changes in rejection behavior
       # Consider: What constitutes a "spike" vs normal variance?
       #           How do you compare current behavior to baseline?
+          summary: "Rejection rate above 30% for 5 minutes"
+          description: >
+            Current rejection rate is {{ printf "%.2f" $value }} (normal ~0.15).
+            Top reason breakdown: check agent_rejections_total broken by 'reason' label.
+            Possible causes: coordinated prompt-injection campaign, bad prompt_version deploy.
+
+      # ตรวจจับ spike โดยเปรียบเทียบ rate 1 นาทีล่าสุดกับ baseline 1 ชั่วโมง
+      # alert เมื่อ rate ปัจจุบัน > 3x baseline จับ sudden burst เช่น script ที่ flood API
+      # แต่ไม่ตอบสนองต่อ variance ปกติ ใช้ for 2 นาทีป้องกัน false positive จาก noise ของการวัด
       - alert: RejectionRateSpike
-        expr: vector(0) > 1
+        expr: >
+          (
+            sum(rate(agent_rejections_total{route="/ask"}[1m]))
+            /
+            sum(rate(agent_requests_total{route="/ask"}[1m]))
+          )
+          /
+          (
+            sum(rate(agent_rejections_total{route="/ask"}[1h]))
+            /
+            sum(rate(agent_requests_total{route="/ask"}[1h]))
+          ) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Rejection rate spike: >3x the 1-hour baseline"
+          description: >
+            Rejection rate is {{ printf "%.1f" $value }}x its 1-hour average.
+            This may indicate a new attack pattern or a prompt_version regression.
+            Query: rate(agent_rejections_total[1m]) grouped by reason to find the spike source.
+
+      # p95 latency > 500ms นาน 5 นาทีบ่งชี้ว่า API มีปัญหา
+      # 500ms เป็น threshold ที่ conservative สำหรับ in-process classifier (ไม่มี I/O)
+      # ถ้าเกินค่านี้อย่างต่อเนื่อง มักหมายถึง CPU saturation หรือ code regression
+      - alert: AgentAPIHighLatency
+        expr: >
+          histogram_quantile(0.95,
+            sum(rate(agent_request_latency_seconds_bucket{route="/ask"}[5m])) by (le)
+          ) > 0.5
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "TODO"
-          description: "TODO"
+          summary: "p95 request latency above 500 ms"
+          description: >
+            p95 latency is {{ printf "%.3f" $value }}s. Normal is well under 50 ms.
+            Check agent_active_requests for concurrency buildup and CPU usage of the container.

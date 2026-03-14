@@ -197,13 +197,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "vector(0)",
-          "legendFormat": "TODO: Implement rejection rate query",
+          "expr": "sum(rate(agent_rejections_total{route=\"/ask\"}[1m])) / sum(rate(agent_requests_total{route=\"/ask\"}[1m]))",
+          "legendFormat": "rejection rate",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Rejection Rate (TODO: FIX THIS PANEL)",
+      "title": "Rejection Rate",
       "type": "timeseries"
     },
     {
@@ -292,13 +292,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "vector(0)",
-          "legendFormat": "TODO",
+          "expr": "sum by (reason) (rate(agent_rejections_total{route=\"/ask\"}[1m]))",
+          "legendFormat": "{{reason}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Rejections by Reason (TODO: FIX)",
+      "title": "Rejections by Reason",
       "type": "timeseries"
     },
     {
@@ -466,13 +466,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "vector(0)",
-          "legendFormat": "TODO",
+          "expr": "sum(rate(agent_rejections_total{route=\"/ask\"}[5m])) / sum(rate(agent_requests_total{route=\"/ask\"}[5m]))",
+          "legendFormat": "rejection rate",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Overall Rejection Rate (TODO: FIX)",
+      "title": "Overall Rejection Rate",
       "type": "stat"
     },
     {

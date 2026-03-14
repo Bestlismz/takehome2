@@ -2,7 +2,7 @@ import os
 import re
 import time
 from flask import Flask, request, jsonify
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__)
 
@@ -14,9 +14,23 @@ REQUEST_COUNT = Counter(
     'Total number of requests to the agent API',
     ['prompt_version', 'route']
 )
-
 # TODO: How would you track rejection metrics for observability?
 # Consider: What information would operators need when debugging rejection spikes?
+# บันทึกการ reject ทุกครั้งพร้อมสาเหตุ (prompt_injection, secrets_request, dangerous_action,ื invalid_request) ทำให้ operator ตอบได้ทันที
+
+REJECTION_COUNT = Counter(
+    'agent_rejections_total',
+    'Total number of rejected requests, labelled by rejection reason',
+    ['prompt_version', 'route', 'reason']
+)
+
+# นับ request ที่กำลังประมวลผลอยู่ (in-flight) ถ้าตัวเลขพุ่งสูงโดยที่ throughput ไม่เพิ่ม
+# แสดงว่ามีปัญหาด้าน latency (response ค้างสะสม) ใช้สำหรับ correlate latency spike กับ concurrency
+ACTIVE_REQUESTS = Gauge(
+    'agent_active_requests',
+    'Number of requests currently being processed',
+    ['route']
+)
 
 REQUEST_LATENCY = Histogram(
     'agent_request_latency_seconds',
@@ -98,10 +112,12 @@ def ask():
     start_time = time.time()
     
     REQUEST_COUNT.labels(prompt_version=PROMPT_VERSION, route='/ask').inc()
+    ACTIVE_REQUESTS.labels(route='/ask').inc()
     
     try:
         data = request.get_json()
         if not data or 'message' not in data:
+            REJECTION_COUNT.labels(prompt_version=PROMPT_VERSION, route='/ask', reason='invalid_request').inc()
             return jsonify({
                 'error': 'Missing required field: message',
                 'rejected': True,
@@ -115,6 +131,7 @@ def ask():
         
         if rejected:
             # TODO: Implement rejection tracking here
+            REJECTION_COUNT.labels(prompt_version=PROMPT_VERSION, route='/ask', reason=reason).inc()
             response = {
                 'rejected': True,
                 'reason': reason,
@@ -132,6 +149,7 @@ def ask():
         return jsonify(response), 200
     
     finally:
+        ACTIVE_REQUESTS.labels(route='/ask').dec()
         latency = time.time() - start_time
         REQUEST_LATENCY.labels(prompt_version=PROMPT_VERSION, route='/ask').observe(latency)
 
