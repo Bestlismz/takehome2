@@ -1,5 +1,6 @@
 #modal.immersive-conversation {
-  width: min(540px, calc(100% - 26px));
+  width: min(480px, calc(100% - 24px));
+  max-height: calc(100dvh - 24px);
   padding: 0;
   overflow: hidden;
   background: #fafafaf7;
@@ -11,24 +12,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 23px 27px 14px;
+  padding: 22px 24px 14px;
 }
 .conversation-header h2 { font-size: 25px; font-weight: 500; letter-spacing: -.5px; }
-.conversation-header>div>span { display: block; margin-top: 2px; color: #929292; font-size: 11px; }
-.conversation-presence { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: #7c7c7c; }
+.conversation-header>div>span { display: block; margin-top: 2px; color: #77777e; font-size: 13px; }
+.conversation-presence { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: #73737b; }
 .conversation-presence i { width: 5px; height: 5px; background: #8b8b8b; border-radius: 50%; }
-.conversation-shell { padding: 9px 19px 21px; }
+.conversation-shell { padding: 7px 14px 18px; }
 .conversation-stage {
   position: relative;
   width: 100%;
-  height: min(51dvh, 400px);
-  min-height: 220px;
+  height: min(400px, calc(100dvh - 265px));
+  min-height: 160px;
   overflow: hidden;
   isolation: isolate;
   contain: layout paint;
   border-radius: 24px;
-  background: radial-gradient(ellipse at 50% 35%, #fff, #f5f5f5 80%);
-  border: 1px solid #eeeeee;
+  background: radial-gradient(ellipse at 40% 30%, #fff 0%, #efeff3 95%);
+  border: 1px solid #e9e9ed;
+  box-shadow: inset 0 1px 3px #fff;
 }
 .stage-camera { position: absolute; inset: 0; z-index: 1; background: #202020; opacity: 0; pointer-events: none; transition: opacity .44s var(--motion-ease); }
 .stage-camera video, .camera-freeze { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -50,10 +52,11 @@
   will-change: transform;
 }
 .stage-companion>.voice-sphere { width: 154px; height: 154px; flex-shrink: 0; }
+.stage-companion::after { content: ''; position: absolute; width: 216px; height: 75px; left: 50%; top: 50%; border: 1px solid #ffffffe0; border-top-color: #ffffff60; border-radius: 50%; transform: translate(-50%, -50%) rotate(-30deg); box-shadow: 0 1px 1px #a4a4b012; }
 .conversation-stage[data-camera="live"] .stage-companion { transform: translate(calc(-50% + 45px), calc(50% - 43px)) scale(.32); }
 .stage-caption { position: absolute; z-index: 4; left: 23px; right: 23px; bottom: 32px; text-align: center; pointer-events: none; }
 .stage-caption h3 { font-size: 24px; font-weight: 400; letter-spacing: -.5px; line-height: 1.55; }
-.immersive-conversation .stage-caption #voice-status { color: #818181; font-size: 12px; line-height: 1.8; margin: 7px 0 0; min-height: 22px; }
+.immersive-conversation .stage-caption #voice-status { color: #73737b; font-size: 14px; line-height: 1.8; margin: 7px 0 0; min-height: 26px; }
 .conversation-stage[data-camera="live"] .stage-caption { left: 84px; right: 15px; bottom: 25px; text-align: left; }
 .conversation-stage[data-camera="live"] .stage-caption h3 { display: none; }
 .immersive-conversation .conversation-stage[data-camera="live"] #voice-status { color: #fff; margin: 0; font-size: 12px; text-shadow: 0 1px 5px #0006; }
@@ -67,8 +70,8 @@
 .stage-capture>img { width: 37px; height: 37px; object-fit: cover; border-radius: 8px; }
 .stage-capture>span { padding-right: 6px; }
 .stage-controls { display: flex; align-items: center; justify-content: space-evenly; width: min(294px, 100%); margin: 17px auto 0; padding: 11px 14px 9px; gap: 14px; border: 1px solid #fff; border-radius: 29px; background: linear-gradient(135deg, #ffffffeb, #f4f4f4b8); box-shadow: inset 0 1px 2px white, 0 3px 15px #00000006; backdrop-filter: blur(20px); }
-.stage-control { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 1; min-width: 0; min-height: 65px; padding: 0; border: 0; border-radius: 0; color: #737373; font-size: 11px; background: transparent; }
-.stage-control>.icon { width: 44px; height: 44px; padding: 12px; border-radius: 50%; border: 1px solid #dedede; background: #ffffff88; color: #494949; box-shadow: inset 0 1px 1px #fff; transition: transform .3s var(--motion-ease), background .2s, box-shadow .2s; }
+.stage-control { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 1; min-width: 0; min-height: 76px; padding: 0; border: 0; border-radius: 0; color: #737373; font-size: 13px; background: transparent; }
+.stage-control>.icon { width: 48px; height: 48px; padding: 13px; border-radius: 50%; border: 1px solid #dedede; background: #ffffff88; color: #494949; box-shadow: inset 0 1px 1px #fff; transition: transform .3s var(--motion-ease), background .2s, box-shadow .2s; }
 .stage-control[aria-pressed="true"]>.icon { background: linear-gradient(145deg, #383838, #1c1c1c); color: #fff; border-color: #454545; box-shadow: inset 0 1px 1px #ffffff35, 0 2px 5px #00000012; }
 .stage-control.end-control>.icon { transform: rotate(135deg); color: #8d5c56; background: #f5efed; border-color: #e9dbd7; }
 .stage-control>span { white-space: nowrap; }
@@ -76,23 +79,13 @@
 .stage-control:active { transform: none; }
 .stage-control:active>.icon { transform: scale(.9); }
 .stage-control.end-control:active>.icon { transform: rotate(135deg) scale(.9); }
-@media(max-width:768px) {
-  #modal.immersive-conversation { width: min(470px, calc(100% - 22px)); border-radius: 29px; }
-  .conversation-header { padding: 20px 23px 12px; }
-  .conversation-header h2 { font-size: 25px; }
-  .conversation-header>div>span, .conversation-presence { font-size: 12px; }
-  .conversation-shell { padding: 7px 13px 17px; }
-  .conversation-stage { border-radius: 22px; }
-  .stage-companion>.voice-sphere { width: 148px; height: 148px; }
-  .stage-caption h3 { font-size: 22px; }
-  .immersive-conversation .stage-caption #voice-status { font-size: 13px; }
-  .stage-controls { width: min(282px, 100%); margin-top: 15px; gap: 12px; }
-  .stage-control { font-size: 12px; }
-  .stage-camera-badge { font-size: 8px; padding: 7px 9px; }
-  .stage-camera-notice { font-size: 10px; }
-  .large-text .stage-caption h3 { font-size: 27px; }
-  .large-text .stage-caption #voice-status { font-size: 15px; }
-}
+.stage-channel-label { position: absolute; top: 19px; left: 15px; right: 15px; text-align: center; color: #777780; font-size: 12px; }
+.phone-stage-controls { width: 222px; }
+.immersive-conversation #phone-elapsed { color: #73737b; font: 12px var(--numbers); }
+.large-text .stage-caption h3 { font-size: 28px; }
+.large-text .immersive-conversation .stage-caption #voice-status { font-size: 17px; }
+@media(max-width:360px) { .conversation-header { padding-inline: 20px; } .stage-caption { left: 16px; right: 16px; } .stage-caption h3 { font-size: 22px; } .stage-controls { gap: 8px; padding-inline: 10px; } }
+@media(max-height:640px) { .stage-companion { transform: translate(0, -48px) scale(1); } .stage-companion>.voice-sphere { width: 110px; height: 110px; } .stage-companion::after { width: 160px; height: 55px; } .stage-caption { bottom: 20px; } }
 @media(prefers-reduced-motion:reduce) {
   .stage-camera, .stage-companion, .stage-control>.icon { transition: none !important; }
   .stage-camera-notice::before { animation: none !important; }

@@ -14,7 +14,8 @@ Camera and microphone require permission and a secure context. A real phone need
 
 ## Try the flows
 
-1. Tap the “อุ่นใจโทรมาดูแล” row to inspect the example call plan and choose a medication or symptom call preview. The real product should call a normal telephone number even when the app is closed. The preview never dials a number.
+1. On the home screen, tap “ลองให้อุ่นใจโทรมา”. Keep this page open: a five-second countdown leads to a simulated incoming call, with a synthesized ringtone when browser audio is allowed. Cancel during countdown or accept/decline when it rings. An unanswered preview becomes a missed demo call after 30 seconds. This is an in-page preview, not an OS call or background notification.
+2. Tap the “อุ่นใจโทรมาดูแล” row to inspect the example call plan and choose a medication or symptom call preview. The real product should call a normal telephone number even when the app is closed. The preview never dials a number.
 2. Accept the simulated incoming call. The assistant introduces itself and asks whether the intended recipient is available. Answer by voice. After acceptance, only microphone pause and hang-up controls remain; there are no answer buttons or text fields.
 3. Say “ใช่ สะดวกคุย”, answer the medication question, describe symptoms and say “ยืนยัน” after the spoken readback. A sample call summary is stored with demo provenance. It does not mark an actual dose taken.
 4. In the call-plan dialog, preview a missed call. A missed call is not interpreted as a missed dose or a health symptom.
@@ -34,10 +35,13 @@ node --test tests/*.test.mjs
 - `media.js` owns camera and voice lifecycles, microphone RMS analysis and supported Thai command interpretation.
 - `voice-tools.js` declares the tool allowlist and dispatch boundary. An AI provider can produce this structured call format later.
 - `styles.css` contains the monochrome graphite/silver theme, glass controls, incoming-call motion, sphere animation, touch feedback and responsive layout. Reduced motion is respected.
+- `call-ringtone.js` synthesizes the demo ringtone with Web Audio and stops its tones when the call leaves the incoming state.
 - `phone-calls.js` owns call-plan UI, incoming/connected/summary rendering, voice-only phone-call state transitions and demo call records.
 - `conversation-stage.js` and `conversation.css` keep voice and video in one fixed-size canvas. The same video element fades in after its first frame; the orb moves into the corner. One control dock replaces the separate camera toolbar, status cards and example section.
 - `PRODUCT.md` documents the feature boundary, researched sources and production architecture.
-- `assets/refined-concept.png` is the current visual concept. The earlier concepts are retained as design exploration, not the current target.
+- `pages.css` styles health history, medication, caregiver controls and shared form surfaces.
+- `home.css` styles the home dashboard: silver voice panel, floating orb, reading tiles and combined health/caregiver panel.
+- `assets/home-silver-concept.png` is the latest home reference. Earlier concepts are retained as design exploration.
 
 ## What is still a prototype
 

@@ -81,3 +81,38 @@ test('the phone experience completes entirely through spoken answers without ans
     assert.match(modal.innerHTML, /คุยเรียบร้อยแล้ว/);
   } finally { experience.stop(); }
 });
+
+test('a delayed mock call arrives and becomes missed when nobody answers', async () => {
+  const state = { events: [] };
+  const modal = { open: false, innerHTML: '', dataset: {}, className: '' };
+  const voice = { active: false, listen() {}, stop() {}, speak() {} };
+  const experience = createPhoneExperience({ state, modal, voice, mockDelayMs: 10, ringTimeoutMs: 25, showDialog(kind, html, cls) { modal.open = true; modal.innerHTML = html; modal.className = cls; }, closeDialog() { modal.open = false; }, persist() {}, render() {}, toast() {} });
+  try {
+    experience.action('phone-schedule-mock');
+    assert.equal(modal.open, false);
+    await new Promise(resolve => setTimeout(resolve, 20));
+    assert.equal(modal.dataset.callStep, 'incoming');
+    await new Promise(resolve => setTimeout(resolve, 40));
+    assert.equal(modal.dataset.callStep, 'unanswered');
+    assert.equal(state.events.length, 1);
+    assert.equal(state.events[0].payload.disposition, 'missed');
+    assert.deepEqual(state.events[0].payload.answers, {});
+    assert.equal(state.events[0].isDemo, true);
+  } finally { experience.stop(); }
+});
+
+test('canceling or closing a pending mock call prevents it from arriving', async () => {
+  let arrivals = 0;
+  const modal = { open: false, innerHTML: '', dataset: {}, className: '' };
+  const experience = createPhoneExperience({ state: { events: [] }, modal, mockDelayMs: 10, voice: { stop() {} }, showDialog() { arrivals++; }, closeDialog() {}, persist() {}, render() {}, toast() {} });
+  try {
+    experience.action('phone-schedule-mock');
+    experience.action('phone-cancel-mock');
+    await new Promise(resolve => setTimeout(resolve, 25));
+    assert.equal(arrivals, 0);
+    experience.action('phone-schedule-mock');
+    experience.stop();
+    await new Promise(resolve => setTimeout(resolve, 25));
+    assert.equal(arrivals, 0);
+  } finally { experience.stop(); }
+});

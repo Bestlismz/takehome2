@@ -1,0 +1,149 @@
+.home-dashboard {
+  --home-edge: #e7e7e9;
+  --home-shadow: 0 6px 20px #26263205, 0 1px 3px #26263204;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 26px;
+  max-width: 1240px;
+  padding-bottom: 20px;
+}
+.home-dashboard .greeting { grid-column: 1 / -1; margin: 0 0 3px; }
+.home-dashboard .greeting h1 { font-size: clamp(30px, 2.6vw, 39px); font-weight: 600; letter-spacing: -1px; }
+.home-dashboard .greeting p { font-size: 19px; color: #707074; margin-top: 5px; }
+.home-dashboard .assistant-card {
+  min-height: 306px;
+  display: flex;
+  align-items: center;
+  padding: 31px;
+  border-radius: 28px;
+  border: 1px solid #fff;
+  background: radial-gradient(ellipse at 73% 42%, #fdfdfd 0%, #e5e5e94d 45%, transparent 68%), linear-gradient(125deg, #ffffff 8%, #ededf0 100%);
+  box-shadow: inset 0 0 0 1px #e5e5e980, inset 0 2px 3px #fff, 0 10px 25px -15px #26263226, 0 2px 4px #26263205;
+}
+.home-dashboard .assistant-copy { width: 68%; }
+.home-dashboard .assistant-card h2 { font-size: clamp(28px, 2.45vw, 37px); line-height: 1.45; letter-spacing: -1.1px; font-weight: 500; }
+.home-dashboard .assistant-card p { font-size: 15px; color: #707074; margin: 13px 0 23px; max-width: 310px; }
+.home-dashboard .assistant-copy>.primary { min-height: 53px; font-size: 17px; padding: 12px 25px; border-radius: 28px; box-shadow: inset 0 1px 1px #ffffff55, 0 4px 9px #00000012; }
+.home-orbit { width: 220px; height: 220px; position: absolute; right: 15px; top: calc(50% - 110px); display: grid; place-items: center; pointer-events: none; animation: home-float 7s ease-in-out infinite; }
+.home-orbit>.voice-sphere { width: 166px; height: 166px; box-shadow: inset 0 0 4px 2px #fff, inset -9px -9px 24px #77777719, 0 12px 22px -15px #6e6e7c55; }
+.home-orbit::after { content: ''; position: absolute; width: 235px; height: 81px; border: 1px solid #ffffffd9; border-top-color: #fff5; border-radius: 50%; transform: rotate(-32deg); box-shadow: 0 1px 1px #b3b3bd12, inset 0 -1px 2px #fff7; }
+.home-orbit::before { content: ''; position: absolute; inset: 1px; border-radius: 50%; background: radial-gradient(circle, #ffffff6b 42%, transparent 70%); }
+.orbit-shadow { position: absolute; bottom: 0; width: 113px; height: 11px; background: #8c8c9c24; border-radius: 50%; filter: blur(9px); }
+@keyframes home-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+.home-dashboard .phone-plan-card { margin-top: 17px; padding: 17px 20px; gap: 15px; min-height: 94px; border: 1px solid var(--home-edge); border-radius: 20px; background: #ffffffc9; box-shadow: var(--home-shadow); }
+.home-dashboard .phone-plan-icon { width: 48px; height: 48px; background: linear-gradient(145deg, #f5f5f6, #eaeaec); border: 1px solid #ececee; border-radius: 15px; }
+.home-dashboard .phone-plan-copy>strong { font-size: 18px; }
+.home-dashboard .phone-plan-copy>span { font-size: 14px; color: #626267; }
+.home-dashboard .phone-plan-copy>small { font-size: 12px; color: #77777c; }
+.home-dashboard .health-section { margin-top: 27px; }
+.home-dashboard .section-heading h2 { font-size: 21px; font-weight: 500; }
+.home-dashboard .section-heading>.text-button { font-size: 14px; min-height: 44px; }
+.home-dashboard .metrics { gap: 14px; margin-top: 12px; }
+.home-dashboard .metric-card, .home-dashboard .metric-card+.metric-card { padding: 20px; border: 1px solid var(--home-edge); border-radius: 21px; background: linear-gradient(150deg, #fff, #fcfcfd); box-shadow: var(--home-shadow); text-align: left; }
+.home-dashboard .metric-label { font-size: 15px; color: #56565c; gap: 9px; }
+.home-dashboard .metric-label>.icon { width: 20px; height: 20px; }
+.home-dashboard .metric-value { font-size: clamp(30px, 2.6vw, 39px); margin: 16px 0 9px; letter-spacing: -1.4px; line-height: 1.2; white-space: nowrap; }
+.home-dashboard .metric-unit { font-size: 13px; letter-spacing: 0; }
+.home-dashboard .metric-meta, .home-dashboard .metric-meta>span { font-size: 12px; color: #747479; }
+.home-dashboard .med-reminder { margin-top: 18px; min-height: 98px; padding: 19px 20px; border: 1px solid var(--home-edge); border-radius: 20px; background: #ffffffc9 !important; box-shadow: var(--home-shadow); gap: 14px; }
+.home-dashboard .reminder-icon { width: 43px; height: 43px; border: 1px solid #ebebee; border-radius: 13px; background: #f4f4f6; }
+.home-dashboard .reminder-icon>.icon { width: 23px; height: 23px; }
+.home-dashboard .med-reminder h3 { font-size: 18px; font-weight: 500; }
+.home-dashboard .med-reminder p { font-size: 12px; line-height: 1.7; }
+.home-dashboard .med-reminder>.primary { min-height: 48px; font-size: 15px; border-radius: 24px; white-space: nowrap; }
+.home-dashboard .done-pill { font-size: 14px; white-space: nowrap; }
+.home-dashboard .daily-section { margin-top: 26px; padding-top: 0; border: 0; }
+.home-dashboard .health-overview { display: flex; flex-direction: column; align-self: start; gap: 25px; padding: 25px 23px; border: 1px solid var(--home-edge); border-radius: 26px; background: #fff; box-shadow: var(--home-shadow); }
+.home-dashboard .chart-card { padding-bottom: 25px; }
+.home-dashboard .chart-card h3 { font-size: 19px; font-weight: 500; }
+.home-dashboard .chart-card>p { font-size: 12px; color: #727278; margin-top: 7px; }
+.overview-reading { display: flex; align-items: baseline; gap: 9px; margin-top: 21px; }
+.overview-reading>strong { font: 600 39px/1.25 var(--numbers); letter-spacing: -1.9px; }
+.overview-reading>strong>span { color: #8a8a90; font-weight: 400; margin: 0 2px; }
+.overview-reading>span { color: #7b7b80; font: 13px var(--numbers); }
+.overview-source { color: #77777c; font-size: 11px; margin-top: 7px; }
+.home-dashboard .bp-chart { margin-top: 19px; }
+.home-dashboard .chart-legend { font-size: 12px; gap: 13px; flex-wrap: wrap; }
+.home-dashboard .chart-legend small { font-size: 10px; color: #76767b; }
+.home-dashboard .family-card { padding-bottom: 25px; }
+.home-dashboard .family-card .section-heading h3 { font-size: 17px; }
+.home-dashboard .family-person { margin-top: 20px; gap: 12px; }
+.home-dashboard .family-person strong { font-size: 17px; font-weight: 500; }
+.home-dashboard .family-person span:not(.avatar) { font-size: 12px; color: #75757b; }
+.home-dashboard .family-card>p { font-size: 14px; line-height: 1.8; margin: 17px 0; }
+.home-dashboard .family-card>.button { font-size: 14px; min-height: 48px; }
+.home-dashboard .voice-tip h3 { font-size: 15px; }
+.home-dashboard .voice-tip>button { font-size: 14px; min-height: 44px; }
+.home-dashboard .voice-tip>span { font-size: 11px; color: #737378; }
+.home-dashboard .metric-card:hover, .home-dashboard .phone-plan-card:hover { background: #f9f9fb; border-color: #cfcfd5; }
+.large-text .home-dashboard .assistant-copy { width: 72%; }
+.large-text .home-dashboard .assistant-card p { font-size: 20px; }
+.large-text .home-dashboard .metric-label { font-size: 20px; }
+.large-text .home-dashboard .metric-meta, .large-text .home-dashboard .metric-meta>span { font-size: 16px; }
+.large-text .home-dashboard .med-reminder { flex-wrap: wrap; }
+.large-text .home-dashboard .med-reminder h3 { font-size: 23px; }
+@media (min-width:769px) and (max-width:1150px) {
+  .home-dashboard { grid-template-columns: 1fr; }
+  .home-dashboard .health-overview { display: grid; grid-template-columns: 1fr 1fr; }
+  .home-dashboard .chart-card { grid-row: span 2; border-bottom: 0; border-right: 1px solid var(--home-edge); padding-right: 25px; padding-bottom: 0; }
+  .home-dashboard .assistant-copy { width: 65%; }
+  .home-orbit { right: 35px; }
+}
+@media (max-width:768px) {
+  .home-dashboard { display: block; }
+  .home-dashboard .greeting { margin: 8px 0 23px; }
+  .home-dashboard .greeting h1 { font-size: 29px; letter-spacing: -.8px; }
+  .home-dashboard .greeting p { font-size: 17px; }
+  .home-dashboard .assistant-card { min-height: 370px; padding: 28px 24px 24px; align-items: flex-end; border-radius: 27px; text-align: center; }
+  .home-dashboard .assistant-copy { width: 100%; }
+  .home-dashboard .assistant-card h2 { font-size: 27px; line-height: 1.35; letter-spacing: -.7px; }
+  .home-dashboard .assistant-card p { font-size: 14px; margin: 10px auto 19px; }
+  .home-dashboard .assistant-copy>.primary { justify-content: center; width: 100%; font-size: 17px; min-height: 52px; }
+  .home-orbit { width: 167px; height: 148px; top: 7px; right: calc(50% - 83.5px); }
+  .home-orbit>.voice-sphere { width: 103px; height: 103px; }
+  .home-orbit::after { width: 159px; height: 58px; }
+  .orbit-shadow { width: 80px; height: 7px; bottom: 8px; }
+  .home-dashboard .phone-plan-card { padding: 17px 15px; gap: 11px; min-height: 99px; border-radius: 20px; margin-top: 15px; }
+  .home-dashboard .phone-plan-icon { width: 39px; height: 44px; border-radius: 13px; }
+  .home-dashboard .phone-plan-copy>strong { font-size: 17px; }
+  .home-dashboard .phone-plan-copy>span { font-size: 12px; }
+  .home-dashboard .phone-plan-copy>small { font-size: 11px; }
+  .home-dashboard .health-section { margin-top: 23px; }
+  .home-dashboard .section-heading h2 { font-size: 20px; }
+  .home-dashboard .section-heading>.text-button { font-size: 13px; }
+  .home-dashboard .metrics { gap: 11px; }
+  .home-dashboard .metric-card, .home-dashboard .metric-card+.metric-card { padding: 17px 13px; border-radius: 20px; }
+  .home-dashboard .metric-label { font-size: 13px; gap: 6px; }
+  .home-dashboard .metric-label>.icon { width: 17px; height: 17px; }
+  .home-dashboard .metric-value { font-size: 27px; margin: 15px 0 10px; white-space: normal; }
+  .home-dashboard .metric-unit { font-size: 11px; margin-left: 3px; }
+  .home-dashboard .metric-meta, .home-dashboard .metric-meta>span { font-size: 11px; }
+  .home-dashboard .metric-meta>span { display: block; }
+  .home-dashboard .med-reminder { padding: 17px 14px; gap: 10px; flex-wrap: wrap; }
+  .home-dashboard .med-reminder h3 { font-size: 17px; }
+  .home-dashboard .med-reminder p { font-size: 11px; }
+  .home-dashboard .med-reminder>.primary { margin-left: 53px; min-height: 46px; }
+  .home-dashboard .health-overview { display: none; }
+  .large-text .home-dashboard .assistant-copy { width: 100%; }
+  .large-text .home-dashboard .assistant-card { min-height: 425px; }
+  .large-text .home-dashboard .assistant-card h2 { font-size: 31px; }
+  .large-text .home-dashboard .metrics { grid-template-columns: 1fr; }
+  .large-text .home-dashboard .metric-value { font-size: 38px; }
+}
+@media (max-width:370px) {
+  .home-dashboard .greeting h1 { font-size: 26px; }
+  .home-dashboard .assistant-card { padding-inline: 18px; }
+  .home-dashboard .assistant-card h2 { font-size: 25px; }
+  .home-dashboard .phone-plan-icon { display: none; }
+  .home-dashboard .metrics { grid-template-columns: 1fr; }
+  .home-dashboard .metric-meta>span { display: inline; }
+}
+@media (prefers-reduced-motion:reduce) { .home-orbit { animation: none; } }
+.mock-call-preview { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 6px 0; }
+.mock-call-preview strong { display: block; font-size: 15px; font-weight: 500; color: #494950; }
+.mock-call-preview p { font-size: 12px; color: #77777e; margin-top: 5px; line-height: 1.8; }
+.mock-call-preview>.button { min-height: 46px; padding: 10px 17px; border-radius: 24px; font-size: 13px; white-space: nowrap; background: #fff; }
+.mock-call-preview>.button>.icon { width: 17px; height: 17px; }
+@media(max-width:768px) { .mock-call-preview { align-items: flex-start; flex-direction: column; gap: 12px; padding: 18px 5px 0; } .mock-call-preview>.button { width: 100%; font-size: 15px; } }
+.large-text .mock-call-preview { flex-wrap: wrap; }
+.large-text .mock-call-preview strong { font-size: 20px; }
+.large-text .mock-call-preview p { font-size: 16px; }

@@ -1,0 +1,154 @@
+.modern-page { --panel-edge: #e6e6e9; --panel-shadow: 0 5px 22px #23233004, 0 1px 3px #23233003; max-width: 1240px; padding-bottom: 24px; }
+.modern-page .page-heading { margin: 0 0 25px; padding: 23px 0 28px; border-bottom: 1px solid #e5e5e8; align-items: center; }
+.modern-page .page-heading h1 { font-size: clamp(29px, 2.7vw, 39px); letter-spacing: -1px; font-weight: 600; }
+.modern-page .page-heading p { font-size: 17px; color: #73737a; margin-top: 8px; }
+.modern-page .page-heading>.button { min-height: 52px; border-radius: 27px; font-size: 15px; white-space: nowrap; }
+.modern-page .glass { border: 1px solid var(--panel-edge); border-radius: 25px; background: #fff; box-shadow: var(--panel-shadow); }
+.modern-page .section-heading h2 { font-size: 22px; font-weight: 500; }
+.route-readings { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+.route-readings .metric-card, .route-readings .metric-card+.metric-card { padding: 23px 26px; border: 1px solid var(--panel-edge); border-radius: 24px; background: linear-gradient(130deg, #fff, #f5f5f7); box-shadow: var(--panel-shadow); text-align: left; }
+.route-readings .metric-label { color: #5d5d65; font-size: 15px; gap: 9px; }
+.route-readings .metric-label>.icon { width: 20px; height: 20px; }
+.route-readings .metric-value { font-size: 38px; line-height: 1.2; margin: 18px 0 10px; letter-spacing: -1.4px; }
+.route-readings .metric-meta, .route-readings .metric-meta>span { font-size: 12px; color: #73737a; }
+.modern-page .history-tools { border: 0; padding: 0; border-radius: 0; align-items: center; gap: 16px; background: transparent !important; box-shadow: none; margin-bottom: 20px; }
+.modern-page .filter-tabs { padding: 5px; gap: 3px; border: 1px solid #e4e4e7; border-radius: 25px; background: #efeff1; }
+.modern-page .filter { font-size: 14px; padding: 9px 15px; border-radius: 21px; min-height: 44px; color: #67676e; }
+.modern-page .filter.active { background: linear-gradient(145deg, #38383b, #242426); color: #fff; box-shadow: inset 0 1px 1px #ffffff40, 0 2px 4px #00000015; font-weight: 500; }
+.modern-page .history-tools>.text-button { font-size: 14px; min-height: 48px; white-space: nowrap; }
+.modern-page .timeline { padding: 27px 30px 12px; }
+.modern-page .timeline>.section-heading { padding-bottom: 15px; border-bottom: 1px solid #ededf0; }
+.modern-page .timeline .muted { font-size: 13px; }
+.modern-page .event-row { padding: 25px 0; gap: 18px; border-color: #ededf0; }
+.modern-page .event-icon { width: 48px; height: 48px; border-radius: 16px; background: linear-gradient(140deg, #f8f8f9, #ededf0); border: 1px solid #e8e8ec; color: #66666d; box-shadow: inset 0 1px 1px #fff; }
+.modern-page .event-icon>.icon { width: 22px; height: 22px; }
+.modern-page .event-title { gap: 10px; }
+.modern-page .event-title h3 { font-size: 16px; font-weight: 500; color: #62626a; }
+.modern-page .source { border: 1px solid #e9e9ed; color: #727279; background: #f6f6f8; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+.modern-page .source.demo { background: #f1f1f4; }
+.modern-page .event-body p { font-size: 22px; color: #29292e; line-height: 1.65; margin: 8px 0; }
+.modern-page .event-body>small { font-size: 12px; color: #7a7a81; }
+.modern-page .event-row>.icon-button { width: 44px; min-width: 44px; height: 44px; border-color: #e8e8ec; }
+.modern-page .event-row>.icon-button>.icon { width: 18px; height: 18px; }
+.modern-page .privacy-note { font-size: 12px; line-height: 1.9; color: #73737a; align-items: flex-start; margin-top: 22px; }
+.modern-page .privacy-note>.icon { margin-top: 3px; }
+.modern-page .notice { background: #f1f1f4 !important; border: 1px solid #e7e7ec; border-radius: 19px; gap: 14px; padding: 18px 22px; }
+.modern-page .notice p { color: #6a6a72; font-size: 14px; line-height: 1.85; }
+.modern-page .notice strong { color: #4b4b53; }
+.modern-page .medication-grid { gap: 22px; }
+.modern-page .medication-card { padding: 28px; position: relative; overflow: hidden; background: linear-gradient(150deg, #fff 30%, #fafafd); }
+.modern-page .medication-top { padding-bottom: 23px; margin-bottom: 23px; border-bottom: 1px solid #eaeaf0; gap: 12px; }
+.modern-page .round-icon { width: 48px; height: 48px; border: 1px solid #e5e5eb; background: linear-gradient(140deg, #fafafa, #ebebef); border-radius: 16px; }
+.modern-page .period { font-size: 16px; color: #62626b; }
+.modern-page .med-time { font-size: 32px; font-weight: 500; letter-spacing: -1px; }
+.modern-page .med-time>small { font-size: 12px; letter-spacing: 0; }
+.modern-page .medication-card>h2 { font-size: 25px; font-weight: 500; }
+.modern-page .medication-card>p { font-size: 15px; color: #73737b; margin-top: 10px; }
+.modern-page .medication-status { padding: 13px 15px; border-radius: 13px; background: #f3f3f6; color: #6b6b74; font-size: 14px; margin: 24px 0 17px; }
+.modern-page .medication-status.is-done { background: #eaeaec; color: #38383e; }
+.modern-page .medication-card>.button { border-radius: 27px; min-height: 52px; font-size: 16px; }
+.modern-page .snooze-button { min-height: 44px; color: #72727a; font-size: 13px; }
+.modern-page .medication-history { margin-top: 25px; padding: 26px 29px; }
+.modern-page .medication-history>.muted { font-size: 15px; line-height: 1.85; }
+.modern-page .care-layout { gap: 23px; grid-template-columns: 1.1fr 1fr; align-items: start; }
+.modern-page .consent-panel, .modern-page .caregiver-preview { padding: 28px; }
+.modern-page .family-person.large { flex-wrap: wrap; gap: 12px; }
+.modern-page .family-person.large h2 { font-size: 22px; font-weight: 500; }
+.modern-page .family-person.large .avatar { background: linear-gradient(145deg, #f0f0f3, #d9d9e0); border: 1px solid #e3e3e9; width: 55px; height: 55px; }
+.modern-page .family-person.large>div>span { font-size: 12px; color: #75757e; }
+.modern-page .consent-panel>p { font-size: 16px; color: #73737a; line-height: 1.9; margin: 25px 0; }
+.modern-page .toggle-row { padding: 24px 0; border-color: #eaeaf0; }
+.modern-page .toggle-row strong { font-size: 17px; font-weight: 500; }
+.modern-page .toggle-row small { font-size: 13px; line-height: 1.85; color: #73737c; }
+.modern-page .consent-note { padding: 17px; background: #f4f4f7; border: 1px solid #ededf2; border-radius: 16px; color: #6e6e78; font-size: 13px; line-height: 1.85; }
+.modern-page .consent-note p { font-size: 13px; }
+.modern-page .caregiver-preview { background: linear-gradient(145deg, #f9f9fb, #f2f2f6); }
+.modern-page .caregiver-preview .section-heading h2 { font-size: 19px; }
+.modern-page .preview-person { padding: 20px; background: linear-gradient(145deg, #414146, #28282d); border: 1px solid #55555d; border-radius: 20px; color: #fff; margin-top: 22px; box-shadow: inset 0 1px 1px #ffffff24, 0 5px 15px #2b2b3c0b; }
+.modern-page .preview-person .avatar { background: #ffffff17; color: #fff; border-color: #ffffff26; }
+.modern-page .preview-person strong { font-size: 17px; font-weight: 500; }
+.modern-page .preview-person small { color: #cdccd4; font-size: 12px; }
+.modern-page .care-summary { padding-top: 23px; }
+.modern-page .care-summary h3 { font-size: 17px; font-weight: 500; color: #53535c; }
+.modern-page .care-summary>div { font-size: 14px; border-color: #e1e1e8; gap: 15px; padding: 15px 0; }
+.modern-page .care-summary strong { font-size: 15px; font-weight: 500; }
+.modern-page .care-summary small { font-size: 11px; color: #73737c; }
+.modern-page .doctor-banner { padding: 25px 28px; border-radius: 24px; background: linear-gradient(115deg, #fff, #eeeef2) !important; gap: 17px; }
+.modern-page .doctor-banner h2 { font-size: 21px; font-weight: 500; }
+.modern-page .doctor-banner p { font-size: 14px; color: #73737b; }
+.modern-page .doctor-banner>.button { border-radius: 25px; min-height: 48px; font-size: 14px; white-space: nowrap; }
+#modal:not(.immersive-conversation):not(.phone-incoming) { border-color: #fff; background: #fafafc; box-shadow: inset 0 1px 2px #fff, 0 25px 90px #25253526; }
+#modal:not(.immersive-conversation) .modal-header { border-color: #e6e6ed; }
+#modal .modal-header h2 { font-weight: 500; }
+#modal .modal-header p { color: #707079; }
+#modal input:not([type=checkbox]), #modal textarea, #modal select { border-color: #dedee6; border-radius: 15px; background: #fff; }
+#modal .form-actions>.button, #modal .phone-settings-body .button { border-radius: 25px; }
+#modal .phone-channel-note { background: linear-gradient(135deg, #fff, #efeff4); border-color: #e7e7ee; }
+.large-text .modern-page .event-body p { font-size: 27px; }
+.large-text .modern-page .event-title h3 { font-size: 21px; }
+.large-text .modern-page .event-body>small, .large-text .modern-page .source { font-size: 15px; }
+.large-text .modern-page .filter { font-size: 18px; }
+.large-text .modern-page .toggle-row strong { font-size: 22px; }
+.large-text .modern-page .toggle-row small { font-size: 17px; }
+@media(max-width:1150px) {
+  .modern-page .history-tools { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .modern-page .care-layout { grid-template-columns: 1fr; }
+  .modern-page .doctor-banner { flex-wrap: wrap; }
+  .modern-page .doctor-banner>.button { margin-left: 65px; }
+}
+@media(max-width:768px) {
+  .modern-page .page-heading { display: flex; flex-direction: column; align-items: flex-start; margin: 7px 0 22px; padding: 0 0 23px; gap: 20px; }
+  .modern-page .page-heading h1 { font-size: 29px; }
+  .modern-page .page-heading p { font-size: 16px; line-height: 1.8; margin-top: 9px; }
+  .modern-page .page-heading>.button { min-height: 49px; font-size: 15px; }
+  .route-readings { gap: 12px; margin-bottom: 22px; }
+  .route-readings .metric-card, .route-readings .metric-card+.metric-card { padding: 18px 14px; border-radius: 20px; }
+  .route-readings .metric-label { font-size: 13px; gap: 6px; }
+  .route-readings .metric-label>.icon { width: 17px; height: 17px; }
+  .route-readings .metric-value { font-size: 27px; margin: 15px 0 10px; }
+  .route-readings .metric-unit { font-size: 11px; margin-left: 3px; }
+  .route-readings .metric-meta, .route-readings .metric-meta>span { font-size: 11px; }
+  .route-readings .metric-meta>span { display: block; }
+  .modern-page .history-tools { gap: 10px; }
+  .modern-page .filter-tabs { width: 100%; border-radius: 21px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 5px; }
+  .modern-page .filter { min-height: 44px; font-size: 13px; padding: 8px 3px; border-radius: 17px; }
+  .modern-page .history-tools>.text-button { font-size: 13px; }
+  .modern-page .timeline { padding: 21px 17px 8px; border-radius: 23px; }
+  .modern-page .section-heading h2 { font-size: 20px; }
+  .modern-page .event-row { padding: 23px 0; gap: 12px; }
+  .modern-page .event-icon { width: 36px; height: 39px; border-radius: 12px; }
+  .modern-page .event-icon>.icon { width: 18px; height: 18px; }
+  .modern-page .event-title { gap: 7px; }
+  .modern-page .event-title h3 { font-size: 15px; }
+  .modern-page .event-body p { font-size: 19px; }
+  .modern-page .event-body>small { font-size: 12px; }
+  .modern-page .source { font-size: 10px; padding: 3px 7px; }
+  .modern-page .event-row>.icon-button { min-width: 44px; width: 44px; }
+  .modern-page .event-title { display: block; }
+  .modern-page .event-title .source { margin-top: 7px; white-space: normal; }
+  .modern-page .privacy-note { font-size: 12px; }
+  .modern-page .notice { padding: 17px; align-items: flex-start; border-radius: 18px; }
+  .modern-page .notice p { font-size: 13px; }
+  .modern-page .medication-grid { grid-template-columns: 1fr; gap: 18px; }
+  .modern-page .medication-card { padding: 24px; border-radius: 24px; }
+  .modern-page .med-time { font-size: 32px; }
+  .modern-page .medication-card>h2 { font-size: 24px; }
+  .modern-page .medication-status { font-size: 14px; }
+  .modern-page .medication-history { padding: 23px 18px; }
+  .modern-page .consent-panel, .modern-page .caregiver-preview { padding: 23px 20px; }
+  .modern-page .family-person.large h2 { font-size: 21px; }
+  .modern-page .family-person.large>.source { margin-left: 67px; margin-top: -5px; }
+  .modern-page .consent-panel>p { font-size: 16px; }
+  .modern-page .toggle-row strong { font-size: 17px; }
+  .modern-page .toggle-row small { font-size: 13px; }
+  .modern-page .care-summary>div { flex-wrap: wrap; gap: 8px; }
+  .modern-page .doctor-banner { padding: 22px; gap: 13px; }
+  .modern-page .doctor-banner>div { flex-basis: calc(100% - 63px); }
+  .modern-page .doctor-banner h2 { font-size: 19px; }
+  .modern-page .doctor-banner>.button { margin-left: 0; width: 100%; }
+  .large-text .route-readings { grid-template-columns: 1fr; }
+  .large-text .modern-page .filter-tabs { grid-template-columns: repeat(3, 1fr); }
+  .large-text .modern-page .event-row { flex-wrap: wrap; }
+  .large-text .modern-page .event-row>.icon-button { margin-left: 48px; }
+}
+@media(max-width:370px) { .route-readings { grid-template-columns: 1fr; } .modern-page .filter-tabs { grid-template-columns: repeat(3, 1fr); } }
