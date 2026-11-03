@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f8f8">
+  <meta name="description" content="อุ่นใจ ผู้ช่วยจดจำสุขภาพระหว่างวัน ต้นแบบสำหรับผู้สูงอายุและคนที่ห่วงใย">
+  <title>อุ่นใจ · ดูแลวันนี้ ให้วันหน้าสบายใจ</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./conversation.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">ข้ามไปเนื้อหา</a>
+  <aside id="sidebar" class="sidebar" aria-label="เมนูหลัก"></aside>
+  <div class="workspace">
+    <header id="header" class="topbar"></header>
+    <main id="content" tabindex="-1"></main>
+    <footer class="app-footer"><span class="status-dot"></span> พื้นที่ทดลองอุ่นใจ <span>ข้อมูลตั้งต้นเป็นตัวอย่าง · บันทึกใหม่อยู่ในเบราว์เซอร์นี้</span></footer>
+  </div>
+  <nav id="mobile-nav" class="mobile-nav" aria-label="เมนูมือถือ"></nav>
+  <dialog id="modal" aria-labelledby="modal-title"></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
