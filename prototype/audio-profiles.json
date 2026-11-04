@@ -1,0 +1,40 @@
+{
+  "speaker": {
+    "label": "คุยผ่านลำโพง",
+    "noise_reduction": {
+      "type": "far_field"
+    },
+    "turn_detection": {
+      "type": "semantic_vad",
+      "eagerness": "medium",
+      "create_response": true,
+      "interrupt_response": true
+    }
+  },
+  "headset": {
+    "label": "คุยผ่านหูฟัง",
+    "noise_reduction": {
+      "type": "near_field"
+    },
+    "turn_detection": {
+      "type": "semantic_vad",
+      "eagerness": "medium",
+      "create_response": true,
+      "interrupt_response": true
+    }
+  },
+  "noisy": {
+    "label": "บริเวณที่มีเสียงรบกวน",
+    "noise_reduction": {
+      "type": "far_field"
+    },
+    "turn_detection": {
+      "type": "server_vad",
+      "threshold": 0.65,
+      "prefix_padding_ms": 350,
+      "silence_duration_ms": 1300,
+      "create_response": true,
+      "interrupt_response": true
+    }
+  }
+}

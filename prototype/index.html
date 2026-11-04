@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f8f8f8">
-  <meta name="description" content="อุ่นใจ ผู้ช่วยจดจำสุขภาพระหว่างวัน ต้นแบบสำหรับผู้สูงอายุและคนที่ห่วงใย">
-  <title>อุ่นใจ · ดูแลวันนี้ ให้วันหน้าสบายใจ</title>
+  <meta name="description" content="ลูกหลาน ช่วยดูแลคนที่เรารัก ผ่านการคุย ถามไถ่ และช่วยจำเรื่องสุขภาพ">
+  <title>ลูกหลาน · ช่วยดูแลคนที่เรารัก</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,14 @@
   <link rel="stylesheet" href="./conversation.css">
   <link rel="stylesheet" href="./home.css">
   <link rel="stylesheet" href="./pages.css">
+  <link rel="stylesheet" href="./art.css">
+  <link rel="stylesheet" href="./mascot.css">
+  <link rel="stylesheet" href="./voice-ui.css">
+  <link rel="stylesheet" href="./family-experience.css">
+  <link rel="stylesheet" href="./almanac.css">
+  <link rel="stylesheet" href="./tool-activity.css">
+  <link rel="stylesheet" href="./ease.css">
+  <link rel="stylesheet" href="./settings.css">
 </head>
 <body>
   <a class="skip-link" href="#content">ข้ามไปเนื้อหา</a>
@@ -21,10 +29,12 @@
   <div class="workspace">
     <header id="header" class="topbar"></header>
     <main id="content" tabindex="-1"></main>
-    <footer class="app-footer"><span class="status-dot"></span> พื้นที่ทดลองอุ่นใจ <span>ข้อมูลตั้งต้นเป็นตัวอย่าง · บันทึกใหม่อยู่ในเบราว์เซอร์นี้</span></footer>
+    <footer class="app-footer"><span class="status-dot"></span> <span id="workspace-label">พื้นที่ทดลองลูกหลาน</span> <span id="storage-status" role="status">กำลังเปิดพื้นที่ครอบครัว…</span></footer>
   </div>
   <nav id="mobile-nav" class="mobile-nav" aria-label="เมนูมือถือ"></nav>
   <dialog id="modal" aria-labelledby="modal-title"></dialog>
+  <dialog id="panel-modal" aria-labelledby="panel-title"></dialog>
+  <aside id="voice-dock" class="voice-dock" aria-label="สายคุยกับลูกหลาน" hidden></aside>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script type="module" src="./app.js"></script>
 </body>

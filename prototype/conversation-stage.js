@@ -1,7 +1,8 @@
+import {tr,html} from './i18n.js';
 import { icon } from './icons.js';
 
 export function conversationStageMarkup(sphere, { cameraEnabled = true } = {}) {
-  return `<section id="conversation-stage" class="conversation-stage" data-camera="off" aria-label="พื้นที่สนทนา${cameraEnabled ? 'และกล้อง' : 'สายโทรศัพท์สาธิต'}">${cameraEnabled ? `<div id="session-camera" class="stage-camera" aria-label="ภาพกล้องในบทสนทนา" aria-hidden="true"><video id="camera-video" autoplay playsinline muted></video><img id="camera-freeze" class="camera-freeze" alt="" aria-hidden="true"><div class="stage-camera-shade"></div></div>` : '<span class="stage-channel-label">สายสาธิต · ไม่มีการโทรจริง</span>'}<div class="stage-companion">${sphere}</div>${cameraEnabled ? `<div id="camera-empty" class="stage-camera-notice" role="status" hidden></div><span id="camera-live-badge" class="stage-camera-badge" hidden><i></i> ภาพสด · ยังไม่วิเคราะห์ภาพ</span><button type="button" class="stage-flip" data-action="camera-switch" aria-label="สลับกล้องหน้าและหลัง" hidden>${icon('switch')}</button>` : ''}<div class="stage-caption"><h3 id="voice-transcript">อุ่นใจอยู่ในสาย</h3><p id="voice-status" role="status">กำลังเริ่มการคุยค่ะ</p></div><div id="capture-preview" class="stage-capture" hidden><img id="captured-photo" alt="ภาพที่เพิ่งถ่าย"><span>เก็บภาพแล้ว</span></div></section>`;
+  return html`<section id="conversation-stage" class="conversation-stage" data-camera="off" aria-label="พื้นที่สนทนา ${cameraEnabled ? tr('และกล้อง') : tr('สายโทรศัพท์สาธิต')}">${cameraEnabled ? html`<div id="session-camera" class="stage-camera" aria-label="ภาพกล้องในบทสนทนา" aria-hidden="true"><video id="camera-video" autoplay playsinline muted></video><img id="camera-freeze" class="camera-freeze" alt="" aria-hidden="true"><div class="stage-camera-shade"></div></div>` : tr('<span class="stage-channel-label">สายสาธิต · ไม่มีการโทรจริง</span>')}<div class="stage-thought" aria-hidden="true"><span class="thought-label">อยู่ข้าง ๆ คุณค่ะ</span><span class="thought-dots"><i></i><i></i><i></i></span></div><div class="stage-companion">${sphere}</div>${cameraEnabled ? html`<div id="camera-empty" class="stage-camera-notice" role="status" hidden></div><span id="camera-live-badge" class="stage-camera-badge" hidden><i></i> ภาพสด · ส่งให้ OpenAI</span><button type="button" class="stage-flip" data-action="camera-switch" aria-label="สลับกล้องหน้าและหลัง" hidden>${icon('switch')}</button>` : ''}<div class="stage-caption"><h3 id="voice-transcript">ลูกหลานอยู่ในสาย</h3><p id="voice-status" role="status">กำลังเริ่มการคุยค่ะ</p></div><div id="capture-preview" class="stage-capture" hidden><img id="captured-photo" alt="ภาพที่เพิ่งถ่าย"><span>เก็บภาพแล้ว</span></div></section>`;
 }
 
 export class ConversationStage {
@@ -17,13 +18,26 @@ export class ConversationStage {
     this.closeTimer = null;
   }
   get cameraRequested() { return ['loading', 'live'].includes(this.root.dataset.camera); }
+  refreshLanguage() {
+    const cameraEnabled=Boolean(this.video);
+    this.root.setAttribute('aria-label',`${tr('พื้นที่สนทนา')} ${tr(cameraEnabled?'และกล้อง':'สายโทรศัพท์สาธิต')}`);
+    const update=(selector,value)=>{const element=this.root.querySelector(selector);if(element)element.textContent=tr(value);};
+    update('.thought-label','อยู่ข้าง ๆ คุณค่ะ');
+    update('.stage-channel-label','สายสาธิต · ไม่มีการโทรจริง');
+    update('.stage-capture span','เก็บภาพแล้ว');
+    this.flip?.setAttribute('aria-label',tr('สลับกล้องหน้าและหลัง'));
+    this.root.querySelector('#captured-photo')?.setAttribute('alt',tr('ภาพที่เพิ่งถ่าย'));
+    this.cameraLayer?.setAttribute('aria-label',tr('ภาพกล้องในบทสนทนา'));
+    if(this.badge)this.badge.innerHTML=`<i></i> ${tr('ภาพสด · ส่งให้ OpenAI')}`;
+    if(this.root.dataset.camera==='loading' && this.notice)this.notice.textContent=tr('กำลังเปิดกล้อง');
+  }
   requesting() {
     clearTimeout(this.closeTimer);
     this.root.dataset.camera = 'loading';
     this.cameraLayer.setAttribute('aria-hidden', 'false');
     this.freeze.removeAttribute('src');
     this.notice.hidden = false;
-    this.notice.textContent = 'กำลังเปิดกล้อง';
+    this.notice.textContent = tr('กำลังเปิดกล้อง');
     this.badge.hidden = true;
     this.flip.hidden = true;
   }

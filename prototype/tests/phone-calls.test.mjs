@@ -67,7 +67,7 @@ test('the phone experience completes entirely through spoken answers without ans
     experience.hear('ใช่ค่ะ สะดวกคุย');
     assert.match(spoken.at(-1), /กินแล้วหรือยัง/);
     experience.hear('ยังไม่ได้กินยา');
-    assert.match(spoken.at(-1), /รู้สึกอย่างไร/);
+    assert.match(spoken.at(-1), /อาการ.*จด/);
     experience.hear('วันนี้เวียนหัวเล็กน้อยช่วงเช้า');
     assert.match(spoken.at(-1), /ยังไม่ได้กินยา/);
     assert.match(spoken.at(-1), /ยืนยัน/);
@@ -115,4 +115,23 @@ test('canceling or closing a pending mock call prevents it from arriving', async
     await new Promise(resolve => setTimeout(resolve, 25));
     assert.equal(arrivals, 0);
   } finally { experience.stop(); }
+});
+
+test('incoming mock call accepts and declines through spoken words', () => {
+  const state = {events:[]};
+  const modal = {open:false,innerHTML:'',dataset:{},className:''};
+  const voice = {active:false,listen(){this.active=true;},stop(){this.active=false;},speak(){}};
+  const experience=createPhoneExperience({state,modal,voice,showDialog(k,html,cls){modal.open=true;modal.innerHTML=html;modal.className=cls;},closeDialog(){modal.open=false;},persist(){},render(){},toast(){}});
+  try {
+    experience.action('phone-incoming');
+    assert.equal(voice.active,true);
+    experience.hear('รับสายค่ะ');
+    assert.equal(modal.dataset.callStep,'consent');
+    experience.action('phone-end');
+    experience.action('phone-symptoms');
+    experience.hear('ไม่รับสายค่ะ');
+    assert.equal(modal.dataset.callStep,'unanswered');
+    assert.equal(state.events.at(-1).payload.disposition,'decline');
+    assert.deepEqual(state.events.at(-1).payload.answers,{});
+  } finally {experience.stop();}
 });

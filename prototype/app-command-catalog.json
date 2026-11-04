@@ -1,0 +1,1188 @@
+{
+  "version": 1,
+  "parameters": {
+    "route": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "today",
+        "history",
+        "medication",
+        "care",
+        "summary",
+        "calendar",
+        null
+      ]
+    },
+    "filter": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "all",
+        "bloodPressure",
+        "temperature",
+        "symptom",
+        "dose",
+        "photo",
+        "call",
+        "meal",
+        "glucose",
+        "adherence",
+        null
+      ]
+    },
+    "enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100
+    },
+    "field": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "medication",
+        "symptoms",
+        "retry",
+        "medicationAt",
+        "symptomsAt",
+        "logs",
+        null
+      ]
+    },
+    "value": {
+      "type": [
+        "boolean",
+        "string",
+        "null"
+      ]
+    },
+    "purpose": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "medication",
+        "symptoms",
+        "missed",
+        null
+      ]
+    },
+    "controlStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "unknown",
+        "controlled",
+        "uncontrolled",
+        null
+      ]
+    },
+    "clinicianReported": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "kind": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "bloodPressure",
+        "temperature",
+        "symptom",
+        "photo",
+        "meal",
+        "glucose",
+        "adherence",
+        "dose",
+        "call",
+        null
+      ]
+    },
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 4000
+    },
+    "patch": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4000
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "portion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "systolic": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "diastolic": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "mg/dL",
+            "°C",
+            "mmHg",
+            null
+          ]
+        },
+        "measured": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "mealRelation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "fasting",
+            "before_meal",
+            "after_meal",
+            "random",
+            "unknown",
+            null
+          ]
+        },
+        "minutesAfterMeal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "taken",
+            "missed",
+            "partial",
+            "unknown",
+            null
+          ]
+        },
+        "medicationName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "medicationRelation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "after_medication",
+            "unknown",
+            null
+          ]
+        },
+        "minutesAfterMedication": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "noSymptoms": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "text",
+        "description",
+        "portion",
+        "systolic",
+        "diastolic",
+        "value",
+        "unit",
+        "measured",
+        "mealRelation",
+        "minutesAfterMeal",
+        "status",
+        "medicationName",
+        "reason",
+        "medicationRelation",
+        "minutesAfterMedication",
+        "noSymptoms"
+      ]
+    },
+    "confirmed": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "audioProfile": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "speaker",
+        "headset",
+        "noisy",
+        null
+      ]
+    },
+    "date": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "direction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "previous",
+        "next",
+        null
+      ]
+    },
+    "planType": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "appointment",
+        "activity",
+        "followup",
+        null
+      ]
+    },
+    "occurredAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40,
+      "description": "Observation time ISO8601 with offset. Bangkok +07:00. Ask if unclear. Never future."
+    },
+    "limit": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "List page size integer 1 to 50"
+    },
+    "offset": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "List offset integer 0 or higher"
+    },
+    "includeCancelled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "language": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "th",
+        "en",
+        null
+      ]
+    }
+  },
+  "actions": [
+    {
+      "action": "navigate",
+      "label": "เปิดหน้าที่ต้องการ",
+      "family": "navigation",
+      "allowed": [
+        "route"
+      ],
+      "required": [
+        "route"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "history.filter",
+      "label": "ค้นหาและกรองสมุดสุขภาพ หรือเปิดปิดข้อมูลตัวอย่าง",
+      "family": "history",
+      "allowed": [
+        "filter",
+        "text",
+        "enabled"
+      ],
+      "required": [
+        "filter"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "text คือคำค้น ถ้าว่างใช้ null; enabled คือแสดงข้อมูลตัวอย่าง true/false ถ้าไม่เปลี่ยนใช้ null; filter=all เพื่อล้างประเภท"
+    },
+    {
+      "action": "display.large_text",
+      "label": "ตั้งขนาดตัวอักษร",
+      "family": "accessibility",
+      "allowed": [
+        "enabled"
+      ],
+      "required": [
+        "enabled"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "activity.set",
+      "label": "ทำหรือยกเลิกเครื่องหมายกิจวัตร",
+      "family": "activity",
+      "allowed": [
+        "id",
+        "enabled",
+        "confirmed"
+      ],
+      "required": [
+        "id",
+        "enabled"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": ""
+    },
+    {
+      "action": "call_plan.open",
+      "label": "เปิดแผนโทรติดตาม",
+      "family": "call-plan",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "call_plan.set",
+      "label": "แก้เวลาและการเปิดปิดแผนโทรสาธิต",
+      "family": "call-plan",
+      "allowed": [
+        "field",
+        "value",
+        "confirmed"
+      ],
+      "required": [
+        "field",
+        "value"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "เวลาใช้ HH:mm ตามประเทศไทย เป็นแผนสาธิตในเครื่อง ไม่ตั้งสายจริง"
+    },
+    {
+      "action": "mock_call.schedule",
+      "label": "ให้โทรเข้าสาธิตใน 5 วินาที",
+      "family": "mock-call",
+      "allowed": [
+        "purpose"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "mock_call.cancel",
+      "label": "ยกเลิกสายสาธิตที่นับถอยหลัง",
+      "family": "mock-call",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "mock_call.preview",
+      "label": "เปิดสายสาธิตทันทีหรือดูกรณีไม่รับสาย",
+      "family": "mock-call",
+      "allowed": [
+        "purpose"
+      ],
+      "required": [
+        "purpose"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "mock_call.accept",
+      "label": "รับสายสาธิตที่แสดงอยู่",
+      "family": "mock-call",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "mock_call.decline",
+      "label": "ปฏิเสธสายสาธิตที่แสดงอยู่",
+      "family": "mock-call",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "sharing.set",
+      "label": "เปิดปิดตัวอย่างข้อมูลฝั่งคนดูแล",
+      "family": "sharing",
+      "allowed": [
+        "field",
+        "enabled",
+        "confirmed"
+      ],
+      "required": [
+        "field",
+        "enabled"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "เปลี่ยนเฉพาะภาพตัวอย่างในเครื่อง ไม่ส่งข้อมูลให้บุคคลอื่น"
+    },
+    {
+      "action": "care_plan.open",
+      "label": "เปิดแผนการติดตามตามแพทย์",
+      "family": "care-plan",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "care_plan.set",
+      "label": "บันทึกสถานะเบาหวานตามแผนที่แพทย์แจ้ง",
+      "family": "care-plan",
+      "allowed": [
+        "controlStatus",
+        "clinicianReported",
+        "confirmed"
+      ],
+      "required": [
+        "controlStatus",
+        "clinicianReported"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "ห้ามอนุมานสถานะเอง ต้องยืนยันว่าแพทย์แจ้ง"
+    },
+    {
+      "action": "record.open",
+      "label": "เปิดแบบบันทึกสุขภาพ",
+      "family": "record",
+      "allowed": [
+        "kind"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "record.list",
+      "label": "อ่านรายการบันทึกให้เลือก",
+      "family": "record",
+      "allowed": [
+        "kind",
+        "date",
+        "text",
+        "limit",
+        "offset"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "กรองวันตาม Asia/Bangkok หรือข้อความ คืน total และ nextOffset เพื่อดูบันทึกเก่าทีละหน้า ห้ามแต่ง id"
+    },
+    {
+      "action": "record.edit",
+      "label": "เปิดบันทึกที่เลือกเพื่อเตรียมแก้ไข ยังไม่เปลี่ยนข้อมูล",
+      "family": "record",
+      "allowed": [
+        "id"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "record.update",
+      "label": "แก้บันทึกที่เลือกหลังอ่านทวนและยืนยัน",
+      "family": "record",
+      "allowed": [
+        "id",
+        "patch",
+        "confirmed",
+        "occurredAt"
+      ],
+      "required": [
+        "id",
+        "patch"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "ใช้ id ที่ record.list ส่งคืน ห้ามแต่ง id ห้ามแก้รายการตัวอย่างหรือเปลี่ยนโภชนาการที่ประมาณเป็นค่าวัด"
+    },
+    {
+      "action": "dose.take",
+      "label": "ยืนยันการกินยามื้อที่ระบุ",
+      "family": "medication",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": ""
+    },
+    {
+      "action": "dose.undo",
+      "label": "ยกเลิกการยืนยันกินยาที่กดผิด",
+      "family": "medication",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": ""
+    },
+    {
+      "action": "reminder.snooze",
+      "label": "เลื่อนเตือนยามื้อเช้าอีก 10 นาที",
+      "family": "medication",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "ทำงานขณะเปิดเว็บนี้ไว้เท่านั้น"
+    },
+    {
+      "action": "report.preview",
+      "label": "เปิดหรืออ่านสรุปสุขภาพสำหรับแพทย์",
+      "family": "report",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "report.print",
+      "label": "เปิดหน้าพิมพ์หรือบันทึก PDF ของเบราว์เซอร์",
+      "family": "report",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "แอปเปิดหน้าพิมพ์ได้ แต่ผู้ใช้ต้องเลือกเครื่องพิมพ์หรือยืนยันบันทึกไฟล์เอง"
+    },
+    {
+      "action": "summary.generate",
+      "label": "เรียบเรียงสรุปจากข้อมูลที่ยืนยันด้วย AI",
+      "family": "report",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "meal.open",
+      "label": "เปิดบันทึกอาหาร",
+      "family": "meal",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "meal.estimate",
+      "label": "ประมาณอาหารจากคำเล่าหรือภาพกล้องปัจจุบัน",
+      "family": "meal",
+      "allowed": [
+        "text"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "meal.talk",
+      "label": "เริ่มคุยเรื่องมื้ออาหาร",
+      "family": "meal",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "glucose.talk",
+      "label": "เริ่มคุยเรื่องค่าน้ำตาลจากเครื่องวัด",
+      "family": "glucose",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "health.confirm",
+      "label": "บันทึกรายการสุขภาพที่อ่านทวนรอยืนยัน",
+      "family": "record",
+      "allowed": [
+        "confirmed"
+      ],
+      "required": [],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": ""
+    },
+    {
+      "action": "health.cancel",
+      "label": "ยกเลิกข้อมูลสุขภาพที่ยังไม่บันทึก",
+      "family": "record",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "voice.repeat",
+      "label": "พูดคำตอบล่าสุดอีกครั้ง",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "voice.mute",
+      "label": "พักไมโครโฟน",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "หลังพักไมค์ต้องแตะหรือใช้ระบบอุปกรณ์เปิดใหม่ เพราะแอปไม่ได้ฟังอยู่"
+    },
+    {
+      "action": "voice.unmute",
+      "label": "เปิดไมโครโฟน",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "conversation.end",
+      "label": "จบการคุย",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "dialog.close",
+      "label": "ปิดหน้าต่างย่อยและคุยต่อ",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "profile.open",
+      "label": "เปิดโปรไฟล์ผู้ใช้",
+      "family": "profile",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "about.open",
+      "label": "เปิดข้อมูลเกี่ยวกับแอป",
+      "family": "about",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "image.choose",
+      "label": "เปิดตัวเลือกภาพแนบ",
+      "family": "image",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "เปิดตัวเลือกได้เมื่อเบราว์เซอร์อนุญาต ผู้ใช้ยังต้องเลือกไฟล์หรืออนุญาตอุปกรณ์เอง"
+    },
+    {
+      "action": "conversation.minimize",
+      "label": "ย่อหน้าคุยเป็นแถบผู้ช่วยลอย",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "ยังคุยในสายเดิม ไม่หยุดเสียง"
+    },
+    {
+      "action": "conversation.restore",
+      "label": "ขยายหน้าคุยเต็มอีกครั้ง",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "ยังคุยในสายเดิม ไม่หยุดเสียง"
+    },
+    {
+      "action": "alert.acknowledge",
+      "label": "รับทราบ alert ตาม id โดยไม่ถือว่าปัญหาจบ",
+      "required": [
+        "id",
+        "confirmed"
+      ],
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "อ่าน id จาก alerts ใน context ห้ามแต่งเอง",
+      "family": "alert"
+    },
+    {
+      "action": "summary.history",
+      "label": "เปิดสรุปที่เก็บไว้ในฐานข้อมูล",
+      "required": [],
+      "allowed": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "",
+      "family": "summary"
+    },
+    {
+      "action": "care.sharing",
+      "label": "เปิดการตั้งค่าภาพตัวอย่างการแบ่งปัน",
+      "required": [],
+      "allowed": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "",
+      "family": "care"
+    },
+    {
+      "action": "storage.retry",
+      "label": "ลองบันทึกฐานข้อมูลอีกครั้ง",
+      "required": [],
+      "allowed": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "",
+      "family": "storage"
+    },
+    {
+      "action": "storage.latest",
+      "label": "สำรองฉบับที่ยังไม่ส่งไว้ในเครื่องแล้วเปิดข้อมูลฉบับล่าสุด",
+      "required": [
+        "confirmed"
+      ],
+      "allowed": [
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "family": "storage",
+      "notes": "ใช้เมื่อข้อมูลเปลี่ยนจากอีกหน้าต่าง อ่านทวนก่อนยืนยัน"
+    },
+    {
+      "action": "audio.settings",
+      "label": "เปิดการรับเสียงและเสียงรบกวน",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "family": "audio",
+      "notes": "ไม่อ้างว่าเสียงรบกวนหายหมดหรือเชื่อมแหล่งที่ยังไม่ได้ตั้งค่า"
+    },
+    {
+      "action": "audio.profile",
+      "label": "เลือกการรับเสียง ใช้ noisy เมื่อผู้ใช้บอกว่ารอบข้างเสียงดัง",
+      "allowed": [
+        "audioProfile"
+      ],
+      "required": [
+        "audioProfile"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "family": "audio",
+      "notes": "ไม่อ้างว่าเสียงรบกวนหายหมดหรือเชื่อมแหล่งที่ยังไม่ได้ตั้งค่า"
+    },
+    {
+      "action": "knowledge.sources",
+      "label": "ดูแหล่งข้อมูลและสถานะเชื่อมต่อ",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "family": "knowledge",
+      "notes": "ไม่อ้างว่าเสียงรบกวนหายหมดหรือเชื่อมแหล่งที่ยังไม่ได้ตั้งค่า"
+    },
+    {
+      "action": "calendar.select",
+      "label": "เปิดปฏิทินหรือเลือกวันที่ ISO",
+      "required": [
+        "date"
+      ],
+      "allowed": [
+        "date"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "family": "calendar",
+      "notes": "วันที่ ISO ค.ศ. YYYY-MM-DD ตาม Asia/Bangkok; ห้ามแก้ยา หรืออ้างว่าจองกับโรงพยาบาล"
+    },
+    {
+      "action": "calendar.move",
+      "label": "เลื่อนเดือนปฏิทิน",
+      "required": [
+        "direction"
+      ],
+      "allowed": [
+        "direction"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "family": "calendar",
+      "notes": "วันที่ ISO ค.ศ. YYYY-MM-DD ตาม Asia/Bangkok; ห้ามแก้ยา หรืออ้างว่าจองกับโรงพยาบาล"
+    },
+    {
+      "action": "calendar.add",
+      "label": "เพิ่มนัดหมายส่วนตัว ไม่จองกับโรงพยาบาล",
+      "required": [
+        "date",
+        "at",
+        "title",
+        "confirmed"
+      ],
+      "allowed": [
+        "date",
+        "at",
+        "title",
+        "note",
+        "planType",
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "family": "calendar",
+      "notes": "วันที่ ISO ค.ศ. YYYY-MM-DD ตาม Asia/Bangkok; ห้ามแก้ยา หรืออ้างว่าจองกับโรงพยาบาล"
+    },
+    {
+      "action": "calendar.update",
+      "label": "แก้นัดส่วนตัว ใช้ id จาก context เท่านั้น",
+      "required": [
+        "id",
+        "date",
+        "at",
+        "title",
+        "confirmed"
+      ],
+      "allowed": [
+        "id",
+        "date",
+        "at",
+        "title",
+        "note",
+        "planType",
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "family": "calendar",
+      "notes": "วันที่ ISO ค.ศ. YYYY-MM-DD ตาม Asia/Bangkok; ห้ามแก้ยา หรืออ้างว่าจองกับโรงพยาบาล"
+    },
+    {
+      "action": "calendar.cancel",
+      "label": "ยกเลิกนัดและเก็บประวัติไว้",
+      "required": [
+        "id",
+        "confirmed"
+      ],
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "family": "calendar",
+      "notes": "วันที่ ISO ค.ศ. YYYY-MM-DD ตาม Asia/Bangkok; ห้ามแก้ยา หรืออ้างว่าจองกับโรงพยาบาล"
+    },
+    {
+      "action": "record.delete",
+      "label": "ลบบันทึกที่เลือกออกจากรายการปัจจุบัน สรุปที่เก็บไว้แล้วคงเดิม",
+      "family": "record",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id",
+        "confirmed"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "ใช้ id จาก record.list อ่านทวนชื่อและเวลาก่อนยืนยัน ลบข้อมูลตัวอย่างไม่ได้"
+    },
+    {
+      "action": "activity.open",
+      "label": "ดูงานที่ลูกหลานกำลังทำ",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "activity.close",
+      "label": "ย่องานที่ลูกหลานกำลังทำ",
+      "family": "conversation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": ""
+    },
+    {
+      "action": "web.search",
+      "label": "ค้นเว็บไซต์สาธารณะพร้อมแหล่งอ้างอิง",
+      "family": "knowledge",
+      "allowed": [
+        "text"
+      ],
+      "required": [
+        "text"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "ค้นความรู้ทั่วไป ไม่ใส่ข้อมูลผู้ป่วยหรือข้อมูลติดต่อ"
+    },
+    {
+      "action": "calendar.list",
+      "label": "อ่านนัดหมายตามวันที่หรือคำค้น รวมประวัติที่ยกเลิกได้",
+      "family": "calendar",
+      "allowed": [
+        "date",
+        "text",
+        "includeCancelled",
+        "limit",
+        "offset"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "คืนรายการพร้อม id และ nextOffset ใช้เลือกก่อนแก้หรือยกเลิกนัด"
+    },
+    {
+      "action": "app.inspect",
+      "label": "อ่านหน้าจอ แบบฟอร์ม และรายการที่กำลังเลือก",
+      "family": "navigation",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "ใช้ก่อนคำสั่งกำกวม เช่น ตรงนี้ นัดนี้ หรือผู้ใช้เปลี่ยนหน้าด้วยมือ ไม่อ่าน DOM หรือสื่อดิบ"
+    },
+    {
+      "action": "calendar.form.open",
+      "label": "แสดงแบบฟอร์มนัดใหม่หรือแก้นัด โดยยังไม่บันทึก",
+      "family": "calendar",
+      "allowed": [
+        "id",
+        "date",
+        "at",
+        "title",
+        "note",
+        "planType"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "id ต้องมาจาก calendar.list หรือ app.inspect ใช้ date at title note เพื่อเตรียมแบบฟอร์มให้เห็น ยังต้อง calendar.add หรือ calendar.update และยืนยันเสียงรอบถัดไปก่อนบันทึก"
+    },
+    {
+      "action": "summary.read",
+      "label": "อ่านสรุปฉบับที่เก็บไว้ตาม id",
+      "family": "summary",
+      "allowed": [
+        "id"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "ใช้ id จาก summary.history เท่านั้น เป็นข้อมูล ณ วันที่เก็บ ไม่ใช่สถานะล่าสุด"
+    },
+    {
+      "action": "language.set",
+      "label": "Change app and conversation language",
+      "family": "accessibility",
+      "allowed": [
+        "language"
+      ],
+      "required": [
+        "language"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use th for Thai or en for English. Changes the current voice session without disconnecting."
+    }
+  ],
+  "externalTools": [
+    "camera.open",
+    "camera.close",
+    "camera.switch",
+    "camera.capture",
+    "record_observation"
+  ]
+}

@@ -1,0 +1,34 @@
+.mascot-icon { display: inline-grid; place-items: center; flex: 0 0 auto; width: 33px; height: 35px; vertical-align: middle; transform-origin: 50% 90%; transition: transform .25s cubic-bezier(.2,.75,.3,1); }
+.mascot-icon>img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 1px 0 #6c321d18); }
+.button .mascot-icon { margin: -6px 0; }
+.button:hover .mascot-icon, .mobile-talk:hover .mascot-icon { transform: rotate(-7deg) translateY(-2px); }
+.button:active .mascot-icon, .mobile-talk:active .mascot-icon { transform: rotate(5deg) scale(.93); }
+.mobile-talk>.mascot-icon { width: 35px; height: 39px; margin-top: -5px; }
+.sidebar-camera>.mascot-icon { width: 40px; height: 43px; }
+.voice-sphere.mascot-companion { position: relative; isolation: isolate; background: none; box-shadow: none; border: 0; border-radius: 0; overflow: visible; transform-origin: 50% 86%; animation: none; transition: transform .18s ease-out; }
+.mascot-companion>.mascot-base, .mascot-companion>.mascot-pose { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: contain; transition: opacity .19s ease-out, transform .24s ease-out; filter: drop-shadow(0 7px 3px #74421d12); }
+.mascot-companion>.mascot-base { opacity: 1; }
+.mascot-companion>.mascot-pose { opacity: 0; background-image: url('./assets/luklaan-mascot-poses.png'); background-repeat: no-repeat; background-size: 400% auto; pointer-events: none; }
+.mascot-companion>.pose-listening { background-position: 0% 50%; }
+.mascot-companion>.pose-thinking { background-position: 33.333333% 50%; }
+.mascot-companion>.pose-speaking { background-position: 66.666667% 50%; }
+.mascot-companion>.pose-success { background-position: 100% 50%; }
+.mascot-ground { position: absolute; z-index: -1; height: 8px; width: 61%; left: 20%; bottom: 0; border-radius: 50%; background: #743b2810; filter: blur(5px); }
+.mascot-companion:is([data-state="listening"], [data-state="transcribing"], [data-state="requesting"], [data-state="thinking"], [data-state="processing"], [data-state="speaking"], [data-state="success"], [data-state="error"])>.mascot-base { opacity: 0; }
+.mascot-companion:is([data-state="listening"], [data-state="transcribing"])>.pose-listening { opacity: 1; }
+.mascot-companion:is([data-state="requesting"], [data-state="thinking"], [data-state="processing"], [data-state="error"])>.pose-thinking { opacity: 1; }
+.mascot-companion[data-state="speaking"]>.pose-speaking { opacity: 1; }
+.mascot-companion[data-state="success"]>.pose-success { opacity: 1; }
+.mascot-companion:is([data-state="listening"], [data-state="transcribing"]) { transform: rotate(calc(-1deg - var(--level,0) * 2deg)) scale(calc(1 + var(--level,0) * .055)); }
+.mascot-companion[data-state="speaking"] { transform: translateY(calc(var(--level,0) * -5px)) rotate(calc(var(--level,0) * 1.6deg)) scale(calc(1 + var(--level,0) * .06)); animation: none; }
+.mascot-companion:is([data-state="thinking"], [data-state="processing"], [data-state="requesting"])>.pose-thinking { animation: mascot-consider 1.9s ease-in-out 2; }
+.mascot-companion[data-state="success"]>.pose-success { animation: mascot-celebrate .72s cubic-bezier(.2,.8,.3,1) 1; }
+.mascot-companion[data-state="error"]>.pose-thinking { transform: rotate(-3deg); }
+.mascot-companion[data-state="paused"] { transform: scale(.96); }
+.home-orbit:has(>.mascot-companion) { animation: none; }
+.assistant-card:hover .mascot-companion[data-state="idle"]>.mascot-base { transform: rotate(-2deg) translateY(-3px); }
+@keyframes mascot-consider { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-2px); } }
+@keyframes mascot-celebrate { 0% { transform: translateY(3px) rotate(-3deg); } 45% { transform: translateY(-7px) rotate(3deg); } 72% { transform: translateY(-2px) rotate(-1deg); } 100% { transform: translateY(0) rotate(0); } }
+@media(prefers-reduced-motion:reduce) {
+  .mascot-icon, .mascot-companion, .mascot-companion>.mascot-base, .mascot-companion>.mascot-pose { animation: none !important; transition: none !important; transform: none !important; }
+}

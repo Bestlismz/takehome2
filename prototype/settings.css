@@ -1,0 +1,62 @@
+.settings-modal{width:min(680px,calc(100vw - 40px));max-width:680px;background:#fcfaf4;border-radius:28px 10px 28px 10px}
+.settings-modal .modal-header{padding:18px 22px;border-bottom:1px solid #e5ddcf}
+.settings-modal .modal-header h2{font-size:24px;line-height:1.4}
+.settings-content{padding:20px 22px}
+.settings-intro{display:none}
+.settings-flower{display:grid;place-items:center;width:58px;height:58px;flex-shrink:0;background:#f4d88c;color:#675131;border-radius:43% 57% 54% 46%;transform:rotate(-8deg)}
+.settings-flower svg{width:27px;height:27px;transform:rotate(8deg)}
+.settings-intro p{font-size:21px;font-weight:600;margin:0 0 3px;line-height:1.6;color:#302d28}
+.settings-intro>div>span{font-size:14px;line-height:1.7;color:#796e5f}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.settings-section{min-width:0}
+.settings-section-wide{grid-column:1/-1;padding-top:17px;border-top:1px solid #e5ddcf}
+.settings-section h3{margin:0 0 4px;font-size:16px;line-height:1.7;color:#302d28}
+.settings-section>p{font-size:13px;color:#7c7162;margin:0 0 10px;line-height:1.65}
+.settings-language-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.settings-language-choice,.settings-audio-choice{font:inherit;color:#3b352d;background:#fffcf6;border:1px solid #ded5c4;cursor:pointer;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s}
+.settings-language-choice{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:56px;padding:10px 12px;border-radius:11px;text-align:left}
+.settings-language-choice strong{display:block;font-size:17px;font-weight:600;line-height:1.5}
+.settings-language-choice small{display:none;font-size:11px;color:#8a7c67;line-height:1.7}
+.settings-language-choice i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid #d8d0c1;flex-shrink:0}
+.settings-language-choice i svg{width:14px;height:14px}
+.settings-language-choice.is-selected,.settings-audio-choice.is-selected{background:#edf0fa;border-color:#35509b;box-shadow:inset 0 0 0 1px #35509b}
+.settings-language-choice.is-selected i{background:#304a93;border-color:#304a93;color:#fff}
+.settings-language-choice:active,.settings-audio-choice:active{transform:translateY(2px)}
+.settings-switch-row{width:100%;display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 0;border:0;background:transparent;text-align:left;font:inherit;color:#3b352d;cursor:pointer}
+.settings-type-sample{font:600 21px Manrope,sans-serif;letter-spacing:-1px;color:#77634a}
+.settings-switch-copy{flex:1;min-width:0}
+.settings-switch-copy strong,.settings-links strong{display:block;font-size:16px;font-weight:500;line-height:1.7}
+.settings-switch-copy small,.settings-links small{display:block;font-size:12px;line-height:1.8;color:#807260}
+.settings-switch{width:46px;height:28px;padding:4px;background:#dad4ca;border-radius:30px;flex-shrink:0;transition:background .2s}
+.settings-switch i{display:block;width:20px;height:20px;border-radius:50%;background:white;box-shadow:0 1px 4px #43392926;transition:transform .2s}
+.settings-switch-row[aria-checked=true] .settings-switch{background:#304a93}
+.settings-switch-row[aria-checked=true] .settings-switch i{transform:translateX(18px)}
+.settings-audio-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.settings-audio-choice{position:relative;min-height:112px;border-radius:12px;padding:12px;text-align:left}
+.settings-choice-icon{display:block;color:#8c7254;margin-bottom:7px}
+.settings-choice-icon svg{width:20px;height:20px}
+.settings-audio-choice strong{display:block;font-size:16px;line-height:1.7;font-weight:500}
+.settings-audio-choice small{display:block;font-size:12px;line-height:1.8;color:#81735f;margin-top:3px}
+.settings-choice-check{position:absolute;right:11px;top:12px;color:#304a93}
+.settings-choice-check svg{width:18px;height:18px}
+.settings-links{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.settings-links button{display:flex;align-items:center;gap:11px;min-height:60px;padding:8px 0;background:none;border:0;color:#40382e;text-align:left;cursor:pointer;font:inherit}
+.settings-links button>svg{width:22px;height:22px;flex-shrink:0;color:#8a7458}
+.settings-links button>svg:last-child{width:16px;height:16px;margin-left:auto}
+.settings-storage{display:flex;align-items:center;gap:7px;margin:15px 0 0!important;font-size:12px!important}
+.settings-storage i{width:6px;height:6px;border-radius:50%;background:#8b80b5}
+.settings-storage[data-state=pending] i{background:#bc8053}
+.settings-voice-tip{display:flex;align-items:center;gap:10px;background:#f4ead6;padding:10px 12px;margin-top:17px;border-radius:10px;color:#775f40}
+.settings-voice-tip svg{width:19px;height:19px;flex-shrink:0}
+.settings-voice-tip p{font-size:13px;line-height:1.9;margin:0}
+.settings-privacy-note{font-size:11px;line-height:1.9;color:#8a7f6d;margin:12px 0 0}
+.settings-content button:focus-visible{outline:3px solid #35509b;outline-offset:4px}
+.large-text .settings-section h3,.large-text .settings-audio-choice strong,.large-text .settings-switch-copy strong{font-size:20px}
+.large-text .settings-content small,.large-text .settings-section>p,.large-text .settings-voice-tip p{font-size:16px}
+@media(max-width:600px){.settings-modal{width:calc(100vw - 24px);border-radius:20px}.settings-modal .modal-header{padding:16px 18px}.settings-content{padding:18px}.settings-grid{grid-template-columns:1fr;gap:16px}.settings-section:not(:first-child){padding-top:16px;border-top:1px solid #e5ddcf}.settings-section-wide{grid-column:auto}.settings-intro p{font-size:19px}.settings-intro>div>span{font-size:13px}.settings-audio-options{grid-template-columns:1fr}.settings-audio-choice{min-height:66px;padding:10px 38px 10px 45px}.settings-choice-icon{position:absolute;left:13px;top:20px}.settings-choice-check{top:22px}.settings-links{grid-template-columns:1fr;gap:0}.settings-links button+button{border-top:1px solid #eee7da}.settings-switch-row{min-height:64px}.settings-language-choice{min-height:56px}.settings-privacy-note{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.settings-content *{transition:none!important}}
+
+.settings-modal .modal-header .modal-icon{display:none}
+.settings-modal .modal-header .close-button{width:44px;height:44px;min-width:44px;min-height:44px}
+
+.settings-voice-tip,.settings-privacy-note{display:none}

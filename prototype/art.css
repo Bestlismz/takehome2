@@ -1,0 +1,140 @@
+:root { --forest:#282725; --deep:#272727; --muted:#65615b; --sage:#f4deb0; --line:#ded6ca; --ink:#282725; --blue:#263f8b; --paper:#fcfaf6; --rust:#b84f32; background:var(--paper); }
+body { background:var(--paper); color:var(--ink); }
+body::before { display:none; }
+.sidebar { background:#f5efe6; border-color:#e4dbcd; }
+.brand { letter-spacing:-1.4px; }
+.brand>svg { display:none; }
+.brand::before { content:''; width:44px; height:48px; display:block; background:url('./assets/luklaan-mascot.png') center / contain no-repeat; }
+.brand small { color:#6f665c; }
+.nav-item.active { background:#f5d994; color:#332b23; border-color:#ecd090; border-radius:20px 9px 20px 9px; }
+.sidebar-label,.sidebar-bottom>span,.sidebar-help { color:#756c62; }
+.sidebar-bottom p { color:#4a4038; }
+.sidebar-camera { border-color:#dbd1c4; background:#fffcf6; border-radius:20px 11px; }
+.sidebar-camera small { color:#746b63; }
+.topbar { border-color:#e2dacf; }
+.button.primary { color:#fff; background:var(--blue); border-color:#263d7e; box-shadow:0 4px 0 #172959,inset 0 1px 0 #ffffff35; border-radius:25px 15px 25px 15px; }
+.button.primary:hover { box-shadow:0 5px 0 #172959; transform:translateY(-1px); }
+.button.primary:active { transform:translateY(3px); box-shadow:0 1px 0 #172959; }
+.button.outline { background:#fffcf6; border-color:#a89b88; border-radius:23px 13px; }
+.home-dashboard { grid-template-columns:minmax(0,1fr) 310px; }
+.home-dashboard .greeting h1 { line-height:1.3; font-size:39px; letter-spacing:-1.3px; }
+.home-dashboard .greeting p { color:#6a5d52; font-size:20px; margin-top:14px; }
+.home-dashboard .assistant-card { min-height:318px; background:#f4e4d2; border:1px solid #e5cbb1; border-radius:37px 16px 35px 17px; box-shadow:0 5px 0 #dfcbb560; overflow:hidden; }
+.home-dashboard .assistant-card::before { display:block; content:''; position:absolute; width:220px; height:220px; border-radius:48% 52% 45% 55%; right:29px; top:22px; background:#f1cf6d; transform:rotate(-15deg); }
+.home-dashboard .assistant-card::after { content:''; position:absolute; width:220px; height:70px; border-radius:45% 20% 0 0; bottom:-30px; right:-20px; background:#263f8b; transform:rotate(-14deg); }
+.home-dashboard .assistant-card h2 { font-size:31px; line-height:1.5; }
+.home-dashboard .assistant-card p { color:#645647; font-size:16px; max-width:260px; }
+.home-dashboard .assistant-copy { width:65%; }
+.home-dashboard .assistant-copy>.primary { font-size:17px; background:var(--blue); border-color:var(--blue); box-shadow:0 4px 0 #172959; border-radius:25px 14px; }
+.home-orbit { right:3px; top:calc(50% - 115px); width:235px; height:245px; z-index:1; animation:paper-float 8s ease-in-out infinite; }
+.home-orbit::before,.home-orbit::after,.orbit-shadow { display:none; }
+.voice-sphere.mascot-companion { border-radius:0; background:none; box-shadow:none; overflow:visible; width:190px; height:210px; transform:scale(calc(1 + var(--level)*.1)); }
+.voice-sphere.mascot-companion>img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 8px 4px #74421d14); }
+.home-orbit>.mascot-companion { width:235px; height:245px; }
+.mascot-companion[data-state="speaking"] { animation:paper-speaking .6s ease-in-out infinite alternate; }
+@keyframes paper-speaking { to { transform:translateY(-4px) rotate(2deg) scale(1.035); } }
+@keyframes paper-float { 0%,100% { transform:translateY(0) rotate(-1deg); } 50% { transform:translateY(-7px) rotate(1deg); } }
+.home-dashboard .phone-plan-card,.home-dashboard .metric-card,.home-dashboard .metric-card+.metric-card,.home-dashboard .med-reminder,.home-dashboard .health-overview { background:#fffdf8 !important; border-color:#e0d6c6; border-radius:24px 13px; box-shadow:0 3px 0 #e3d8c34a; }
+.phone-plan-icon,.home-dashboard .phone-plan-icon { background:#efe0c5; border-color:#e4d1af; color:#6d5332; }
+.home-dashboard .metric-label,.home-dashboard .metric-meta,.home-dashboard .metric-meta>span,.metric-unit { color:#6a6257; }
+.home-dashboard .health-overview { border-radius:25px 14px; }
+.summary-teaser h2 { font-size:23px; font-weight:600; letter-spacing:-.6px; }
+.summary-teaser>a:not(.button) { display:grid; grid-template-columns:minmax(0,1fr) 20px; grid-template-areas:"title arrow" "detail arrow"; gap:6px 12px; padding:22px 0; border-bottom:1px solid #ddd4c5; }
+.summary-teaser strong { grid-area:title; min-width:0; font-size:21px; font-weight:500; }
+.summary-teaser>a:not(.button)>span { grid-area:detail; min-width:0; font-size:14px; color:#756a5c; overflow-wrap:break-word; }
+.summary-teaser>a:not(.button)>.icon { grid-area:arrow; align-self:center; justify-self:end; color:var(--rust); }
+.summary-teaser p { font-size:13px; color:#74685a; margin:18px 0; }
+.summary-teaser>.button { width:100%; font-size:15px; }
+.home-dashboard .chart-card { display:none; }
+.meal-journal { display:flex; flex-wrap:wrap; align-items:center; gap:17px; padding:25px; margin-top:25px; background:#f6eddc; border:1px solid #e4d4b8; border-radius:29px 13px; }
+.meal-journal h2 { font-size:24px; }
+.meal-journal p { font-size:16px; color:#5f574a; margin-top:5px; }
+.meal-journal>div:not(.meal-art) { flex:1; min-width:180px; }
+.meal-journal span { font-size:12px; color:#776b58; display:block; margin-top:7px; }
+.meal-art { font:80px/1 var(--numbers); color:var(--blue); transform:rotate(-15deg); }
+.meal-journal>.button { font-size:16px; min-height:51px; }
+.meal-journal>.text-button { font-size:14px; width:100%; text-align:right; color:#6e6252; }
+.modern-page .glass,.route-readings .metric-card,.route-readings .metric-card+.metric-card { background:#fffdf8; border-color:#e1d5c3; border-radius:25px 13px; box-shadow:0 3px 0 #e6d9c146; }
+.modern-page .page-heading { border-color:#dfd3c0; }
+.modern-page .filter-tabs { background:#f1e7d5; border-color:#ded0b9; border-radius:23px 14px; }
+.modern-page .filter.active { background:var(--blue); color:#fff; }
+.modern-page .event-icon,.modern-page .round-icon { background:#f6e2b8; border-color:#ecd29c; color:#6e5024; border-radius:14px 8px; }
+.modern-page .notice { background:#f4e9d2 !important; border-color:#e6d5b5; }
+.modern-page .medication-status { background:#f4ead8; color:#695d47; }
+.modern-page .preview-person { background:var(--blue); border-color:#1e3478; }
+.modern-page .doctor-banner { background:#f4e8d5 !important; }
+.modern-page .source { background:#f1e9db; border-color:#e8dcc8; color:#71624e; }
+.summary-toolbar { display:flex; gap:13px; flex-wrap:wrap; align-items:center; margin-bottom:23px; }
+.summary-toolbar>span { width:100%; color:#766b5d; font-size:14px; margin-top:8px; }
+.summary-toolbar>.button { font-size:15px; min-height:48px; }
+.physician-summary { background:#fffdf8; border:1px solid #dfd4c0; border-radius:29px 13px; padding:30px; }
+.physician-summary h2 { font-size:27px; font-weight:600; margin-bottom:10px; }
+.physician-summary h3 { font-size:21px; font-weight:500; margin-bottom:13px; }
+.physician-summary p { font-size:16px; color:#655d50; line-height:1.9; }
+.summary-condition-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:25px 0; }
+.summary-condition { padding:22px; background:#f7efe0; border:1px solid #e4d9c3; border-radius:21px 10px; }
+.summary-condition:nth-child(2) { background:#f4dfd3; }
+.summary-condition:nth-child(3) { background:#e9eaf3; }
+.physician-summary ul { padding-left:22px; margin:13px 0; }
+.physician-summary li { margin:12px 0; font-size:16px; line-height:1.8; }
+.physician-summary li>span,.physician-summary li>small { display:block; margin-top:5px; color:#756b5b; font-size:14px; }
+.summary-foods,.summary-symptoms,.summary-pending { border-top:1px solid #e0d6c5; padding-top:24px; margin-top:24px; }
+.summary-footer { margin-top:26px; padding:19px; background:#f0e4cc; border-radius:16px; }
+.ai-narrative { background:#f1e8d8; padding:25px; border-radius:22px 11px; border:1px solid #ddcdb2; margin-bottom:24px; }
+.ai-narrative h2 { font-size:24px; }.ai-narrative h3 { margin-top:20px; font-size:20px; }.ai-narrative p,.ai-narrative li { line-height:1.9; font-size:16px; }
+.meal-estimate { margin:24px 0; padding:20px; background:#f4e9d5; border-radius:21px 12px; }
+.meal-estimate h3 { font-size:23px; }.meal-estimate p,.meal-estimate li { font-size:14px; line-height:1.9; margin-top:12px; }
+.nutrition-ranges { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
+.nutrition-ranges>div { display:flex; flex-direction:column; gap:6px; padding:15px; background:#fffaf0; border-radius:15px; }
+.nutrition-ranges span { font-size:14px; }.nutrition-ranges strong { font:600 24px var(--numbers); }.nutrition-ranges small { font-size:12px; }
+#meal-status { font-size:15px; line-height:1.8; margin:16px 0; }
+#meal-confirm { margin-top:17px; }
+#modal.immersive-conversation { background:#fcf8ef; border-color:#fff8e8; box-shadow:0 24px 90px #3c281b25; border-radius:32px 17px; }
+.conversation-stage { background:radial-gradient(ellipse at 50% 25%,#fff9ef,#f1e3cc); border-color:#ead9bd; border-radius:26px 14px; }
+.stage-companion>.mascot-companion { width:180px; height:205px; }
+.stage-companion::after { display:none; }
+.stage-controls { background:#fff9ee; border-color:#fff8ed; border-radius:27px 15px; }
+.stage-control>.icon { background:#fffaf1; border-color:#ded0ba; color:#60513b; }
+.stage-control[aria-pressed="true"]>.icon { background:var(--blue); border-color:#1e3478; }
+.stage-control.end-control>.icon { background:#f0d9cb; color:#95462c; border-color:#d9b7a3; }
+.stage-caption h3 { font-size:25px; }.immersive-conversation .stage-caption #voice-status { color:#6c5e48; }
+.conversation-stage[data-camera="live"] .stage-companion { transform:translate(calc(-50% + 45px),calc(50% - 48px)) scale(.25); }
+#modal.phone-incoming { background:radial-gradient(ellipse at 35% 20%,#3a4f8e,#202b50 80%); }
+.phone-caller-mark { background:url('./assets/luklaan-mascot.png') center / contain no-repeat; border:none; width:110px; height:120px; }
+.phone-caller-mark>.icon { opacity:0; }
+.phone-round-action.accept>.icon { background:#f5d887; border-color:#f8e6ae; color:#493c24; }
+#modal:not(.immersive-conversation):not(.phone-incoming) { background:#fcf8ef; border-radius:29px 15px; }
+.mobile-nav { background:#fffaf0e8; border-color:#fff9ef; border-radius:27px 14px; box-shadow:0 4px 20px #6d56321a; }
+.mobile-talk { background:var(--blue); }.mobile-item.active { color:#30291e; background:#f3dc9e; border-radius:17px 10px; }
+.large-text .summary-condition-grid { grid-template-columns:1fr; }
+@media(max-width:1150px) { .home-dashboard { grid-template-columns:1fr; } .summary-condition-grid { grid-template-columns:1fr; } .home-dashboard .health-overview { display:block; } }
+@media(max-width:768px) {
+ .home-dashboard .greeting h1 { font-size:31px; line-height:1.45; }.home-dashboard .greeting p { font-size:18px; margin-top:10px; }
+ .home-dashboard .assistant-card { min-height:414px; padding:24px; text-align:left; }.home-dashboard .assistant-card::before { width:150px;height:150px;right:7px;top:12px; }.home-dashboard .assistant-card::after { width:155px;bottom:auto;top:123px;right:-42px;height:50px; }
+ .home-dashboard .assistant-copy { width:100%; }.home-dashboard .assistant-card h2 { font-size:25px; }.home-dashboard .assistant-card p { font-size:15px; max-width:none; }
+ .home-orbit { width:174px;height:184px;right:calc(50% - 87px);top:9px; }.home-orbit>.mascot-companion { width:174px;height:184px; }
+ .home-dashboard .health-overview { display:block; margin-top:25px; padding:23px; }.home-dashboard .health-overview>.family-card,.home-dashboard .health-overview>.voice-tip { display:none; }
+ .summary-teaser>a:not(.button) { padding:17px 0; }.summary-teaser strong { font-size:20px; }
+ .meal-journal { padding:22px; gap:12px; }.meal-art { font-size:60px; }.meal-journal>.button { width:100%; }
+ .physician-summary { padding:22px 18px; border-radius:24px 12px; }.physician-summary h2 { font-size:24px; }.summary-condition { padding:19px; }
+ .summary-toolbar>.button { flex:1; min-width:135px; font-size:14px; }.summary-toolbar>span { font-size:13px; }
+ .stage-companion>.mascot-companion { width:180px; height:205px; }.large-text .home-dashboard .assistant-card { min-height:470px; }
+}
+@media(max-height:640px) { .stage-companion>.mascot-companion { width:110px; height:125px; } }
+@media(prefers-reduced-motion:reduce) { .home-orbit,.mascot-companion { animation:none!important; transition:none!important; } }
+@media print { .summary-toolbar,.ai-narrative button { display:none!important; }.physician-summary,.summary-condition { break-inside:avoid; box-shadow:none; border-color:#bbb; } }
+body,.home-dashboard .assistant-card,.conversation-stage,.modern-page .glass { background-image:url('./assets/paper-texture.svg'); }
+.home-dashboard .metric-value.no-reading,.route-readings .metric-value.no-reading { font:500 24px/1.5 var(--font); letter-spacing:-.4px; white-space:normal; }
+@media(max-width:768px) { .home-dashboard .metric-value.no-reading,.route-readings .metric-value.no-reading { font-size:20px; } }
+.summary-header { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap; padding-bottom:23px; border-bottom:1px solid #e3d7c2; }
+.summary-header>span,.summary-header>div>span { color:#776b58; font-size:14px; line-height:1.9; }
+.summary-condition dl { display:grid; gap:9px; margin:20px 0; }
+.summary-condition dt { font-size:14px; color:#71624e; }
+.summary-condition dd { margin:0 0 8px; font-size:19px; font-weight:500; }
+@media(max-width:768px) {
+ .mobile-brand::before { width:32px; height:40px; }.mobile-brand { font-size:28px; }
+ .header-actions { gap:8px; }.header-actions .header-report { display:flex; width:40px; min-height:40px; padding:9px; border:1px solid #dcd1c1; background:#fffaf0; border-radius:16px 9px; }.header-report>span { display:none; }.header-report>.icon { width:20px; height:20px; }
+}
+.mobile-talk { background:transparent; }
+.mobile-talk>.icon { background:var(--blue); box-shadow:0 3px 0 #172959; }
+@media(min-height:641px) { .stage-companion { transform:translate(0,-43px) scale(1); } }

@@ -1,3 +1,11 @@
+# Current implementation: ลูกหลาน, 4 November 2026
+
+This update supersedes earlier prototype boundaries below. The app now uses an original cut-paper mascot, a Python same-origin backend, real OpenAI Realtime WebRTC audio, sampled live-camera image input, structured food/glucose/adherence/symptom observations and seven-day physician summaries. It retains an in-page mock telephone channel; it does not dial carrier numbers. See [current README](README.md), [backend details](BACKEND.md) and [research](research/LUKLAAN-RESEARCH.md).
+
+Three live provider smoke tests returned HTTP200: Realtime credential creation, food estimates and physician narrative. Browser food estimation also completed. Actual microphone/camera conversation remains unverified in the in-app browser because permission timed out. Patient accounts, hospital plan synchronization, a protected server-side medical-record store, clinical nutrition validation and physical phone testing are still outstanding. The current user's key is stored only in the approved ignored root .env.local and is not part of these sources.
+
+The prior design record follows for history.
+
 # อุ่นใจ
 
 ต้นแบบ HTML สำหรับผู้สูงอายุที่ต้องดูแลโรคเรื้อรังที่บ้าน พัฒนาจากเอกสาร AWSxTrue_Hack โดยเน้นการกินยา อาการ และค่าที่วัดระหว่างนัด ไม่ยืนยันตัวเลขสถิติในเอกสาร เพราะต้นแบบไม่ต้องใช้ข้ออ้างเหล่านั้น
@@ -127,3 +135,11 @@ The conversation uses one fixed-size canvas rather than inserting a camera secti
 Camera permission requests run independently of the recognition turn. Spoken acknowledgments still temporarily pause recognition during synthesized speech. Browser and OS permission are required. The transition uses CSS opacity/transform, honors reduced motion and cancels stale stream cleanup on reopening. This revision changes the existing browser frontend; it does not add a Next.js app or Python API.
 
 Four new automated cases cover persistent stage identity, closing/reopening cleanup, permission-error recovery and first-frame readiness (14 total cases). Browser geometry checks at 390×844 confirmed unchanged stage, dock and dialog bounds during opening. The camera permission request timed out in this verification session; real live-video motion and device performance still need physical testing. General vision inference and telephone delivery remain unconnected.
+
+## Voice-first mascot increment
+
+Shared 45-action voice catalog; current-turn confirmation for mutations; persistent conversation dock and separate panels; mute without reconnection; original mascot icons and four interactive sprite poses with reduced-motion support. See README for verification and browser permission limits.
+
+## 4 November 2026: family care, SDK and PostgreSQL
+
+The user clarified the purpose: **ลูกหลาน ช่วยดูแลคนที่เรารัก**. The family organizes care; the older adult speaks naturally. Current implementation uses the official OpenAI Python SDK and PostgreSQL directly (SQLite was considered and rejected at the user's request). Confirmed observations, deterministic summary snapshots, explicit AI reports/evidence, acknowledgements and audit records are persisted. Family overview emphasizes attention, gaps and next questions; physician brief preserves evidence and distinguishes estimates. Status clouds communicate listening/thinking/speaking without transcribing the conversation. Three mascot concepts are for selection only; the current production mascot remains unchanged. Historical descriptions of browser-only storage above are superseded by README/BACKEND. Remote sharing, actual calls, background alerts, clinical validation and production identity are still outstanding.

@@ -168,7 +168,7 @@ export class VoiceSession {
     message.rate = 0.85;
     const thaiVoice = window.speechSynthesis.getVoices().find(v => v.lang.startsWith('th'));
     if (thaiVoice) message.voice = thaiVoice;
-    message.onstart = () => { if (speechGeneration === this.speechGeneration) this.onState('speaking', 'อุ่นใจกำลังพูดค่ะ ฟังจบแล้วพูดต่อได้เลย'); };
+    message.onstart = () => { if (speechGeneration === this.speechGeneration) this.onState('speaking', 'ลูกหลานกำลังพูดค่ะ ฟังจบแล้วพูดต่อได้เลย'); };
     const finish = () => {
       if (speechGeneration !== this.speechGeneration) return;
       this.onState(this.active ? 'ready' : 'paused', this.active ? 'กำลังกลับมาฟังค่ะ' : 'พักไมค์อยู่ค่ะ');

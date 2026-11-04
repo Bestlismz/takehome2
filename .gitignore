@@ -26,3 +26,10 @@ grafana-data/
 
 # Logs
 *.log
+
+# Local application credentials
+.env
+.env.local
+.env.*.local
+.venv/
+prototype/.runtime/

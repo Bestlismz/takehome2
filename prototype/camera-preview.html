@@ -1,0 +1,13 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ลูกหลาน · ตัวอย่างเลย์เอาต์กล้อง</title>
+<link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./conversation.css"><link rel="stylesheet" href="./art.css"><link rel="stylesheet" href="./mascot.css"><link rel="stylesheet" href="./voice-ui.css"><link rel="stylesheet" href="./ease.css">
+<style>body{padding:24px;display:grid;place-items:center;min-height:100dvh;margin:0}.preview-wrap{width:min(480px,100%)}.preview-note{font-size:14px;line-height:1.8;margin:0 0 15px;color:#786b58}.preview-phone{border:1px solid #ded3bf;border-radius:24px;overflow:hidden;background:#fffaf2}.stage-camera{background:radial-gradient(ellipse at 65% 30%,#f6e8cd,#c4b395 72%,#9e907f)}.stage-camera-shade{display:none}.preview-action{margin:14px 0 0;min-height:50px;width:100%;border:1px solid #c8b89b;background:#fffaf1;border-radius:12px;color:#463e32;font-size:16px}.preview-header{padding:22px 24px 14px}.preview-header h1{font-size:23px}.preview-header p{font-size:12px;color:#786e5e;margin-top:5px}</style>
+<div class="preview-wrap"><p class="preview-note">ตัวอย่างจัดวางเท่านั้น · ไม่เปิดกล้อง ไมโครโฟน หรือส่งข้อมูล</p><div class="preview-phone immersive-conversation"><header class="preview-header"><h1>ลูกหลาน</h1><p>AI · เสียงและภาพเมื่อเปิดกล้องส่งให้ OpenAI</p></header><div class="conversation-shell" id="preview-root"></div></div><button class="preview-action" id="toggle-preview">ปิดกล้องตัวอย่าง</button></div>
+<script type="module">
+import {conversationStageMarkup,ConversationStage} from './conversation-stage.js';
+import {mascotStageMarkup} from './mascot.js';
+const root=document.querySelector('#preview-root');root.innerHTML=conversationStageMarkup(mascotStageMarkup());
+const stage=new ConversationStage(root.querySelector('#conversation-stage'),{reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches});
+root.querySelector('#voice-status').textContent='พูดต่อได้เลยค่ะ ลูกหลานฟังอยู่';
+stage.live();
+document.querySelector('#toggle-preview').addEventListener('click',event=>{if(stage.cameraRequested){stage.closing();event.target.textContent='เปิดกล้องตัวอย่าง';}else{stage.live();event.target.textContent='ปิดกล้องตัวอย่าง';}});
+</script></html>

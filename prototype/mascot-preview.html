@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>รู้จักลูกหลาน · Mascot</title>
+<link rel="stylesheet" href="mascot.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#f5f1e8;color:#292e37;font-family:'Noto Sans Thai',sans-serif}main{max-width:920px;margin:auto;padding:28px 24px}a{color:#334fbd;text-decoration:none}header{display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:14px}h1{font-size:clamp(32px,6vw,56px);font-weight:500;letter-spacing:-1px;margin:28px 0 10px}p{color:#68665f;line-height:1.8}.scene{display:grid;place-items:center;min-height:260px;background:#eee7db;border-radius:140px 140px 80px 80px;margin:20px auto;max-width:520px}.scene .mascot-companion{width:230px;height:230px}.poses{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}button{font:inherit;min-height:54px;padding:12px 25px;border:1px solid #d3cabb;border-radius:30px;background:#fffaf2;color:#343d51;cursor:pointer;transition:transform .2s,background .2s}button:hover{transform:translateY(-3px)}button[aria-pressed=true]{background:#334fbd;color:white;border-color:#334fbd}button:focus-visible{outline:3px solid #e2a051;outline-offset:4px}#caption{text-align:center;min-height:30px}.note{text-align:center;font-size:13px;margin-top:22px}@media(prefers-reduced-motion:reduce){button{transition:none}}
+</style>
+<main><header><a href="/#today">← กลับแอปลูกหลาน</a><span>ลูกหลาน · อยู่ข้าง ๆ ทุกวัน</span></header><h1>มีลูกหลานอยู่ข้าง ๆ</h1><p>ตั้งใจฟัง ค่อย ๆ คิด แล้วคุยกันเหมือนคนในครอบครัว<br>ลองเลือกท่าทางเพื่อรู้จักลูกหลานได้เลยค่ะ</p><div class="scene" id="scene"></div><p id="caption" aria-live="polite">กำลังฟังคุณอยู่ค่ะ</p><div class="poses" aria-label="ท่าทางลูกหลาน"><button data-pose="listening" aria-pressed="true">ตั้งใจฟัง</button><button data-pose="thinking" aria-pressed="false">กำลังคิด</button><button data-pose="speaking" aria-pressed="false">กำลังพูด</button><button data-pose="success" aria-pressed="false">เรียบร้อยแล้ว</button></div><p class="note">นี่คือตัวอย่างท่าทาง · ในบทสนทนาจริงจะเปลี่ยนตามสถานะและระดับเสียง</p></main>
+<script type="module">
+import {mascotStageMarkup,setMascotState} from './mascot.js';
+const scene=document.querySelector('#scene');scene.innerHTML=mascotStageMarkup();
+const captions={listening:'กำลังฟังคุณอยู่ค่ะ',thinking:'ขอคิดสักครู่นะคะ',speaking:'ลูกหลานกำลังเล่าให้ฟังค่ะ',success:'เรียบร้อยแล้วค่ะ'};
+function select(pose){setMascotState(pose,scene);document.querySelector('#caption').textContent=captions[pose];for(const b of document.querySelectorAll('[data-pose]'))b.setAttribute('aria-pressed',String(b.dataset.pose===pose));}
+for(const b of document.querySelectorAll('[data-pose]'))b.addEventListener('click',()=>select(b.dataset.pose));
+select('listening');
+</script></html>

@@ -1,14 +1,16 @@
+import {tr,intlLocale,getLanguage} from './i18n.js';
 export const dateKey = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
-export const thaiDate = (date = new Date(), opts = {}) => new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'long', year: 'numeric', ...opts }).format(date);
-export const time = date => new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' }).format(new Date(date));
+export const thaiDate = (date = new Date(), opts = {}) => new Intl.DateTimeFormat(intlLocale(), { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'long', year: 'numeric', ...opts }).format(date);
+export const time = date => new Intl.DateTimeFormat(intlLocale(), { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' }).format(new Date(date));
 export const schedules = [
-  { id: 'morning', at: '08:00', name: 'ยาหลังอาหารเช้า', detail: 'ตามแผนยาของคุณ · รายการตัวอย่าง', period: 'เช้า', icon: 'sun' },
-  { id: 'evening', at: '20:00', name: 'ยามื้อเย็น', detail: 'ตามแผนยาของคุณ · รายการตัวอย่าง', period: 'เย็น', icon: 'pill' },
+  { id: 'morning', at: '08:00', get name(){return tr('ยาหลังอาหารเช้า','After-breakfast medicine');}, get detail(){return tr('ตามแผนยาของคุณ · รายการตัวอย่าง','Your medicine plan · sample');}, get period(){return tr('เช้า','Morning');}, icon: 'sun' },
+  { id: 'evening', at: '20:00', get name(){return tr('ยามื้อเย็น','Evening medicine');}, get detail(){return tr('ตามแผนยาของคุณ · รายการตัวอย่าง','Your medicine plan · sample');}, get period(){return tr('เย็น','Evening');}, icon: 'pill' },
 ];
 const KEY = 'aunjai-prototype-v1';
-const validKinds = ['dose', 'bloodPressure', 'temperature', 'symptom', 'photo', 'call'];
-export const labels = { dose: 'การกินยา', bloodPressure: 'ความดันโลหิต', temperature: 'อุณหภูมิร่างกาย', symptom: 'อาการและความรู้สึก', photo: 'ภาพบันทึกสุขภาพ', call: 'โทรติดตามสุขภาพ' };
-export const eventIcon = { dose: 'pill', bloodPressure: 'heart', temperature: 'thermometer', symptom: 'book', photo: 'image', call: 'phone' };
+const validKinds = ['dose', 'bloodPressure', 'temperature', 'symptom', 'photo', 'call', 'meal', 'glucose', 'adherence'];
+const labelText = {dose:['การกินยา','Medicine taken'],bloodPressure:['ความดันโลหิต','Blood pressure'],temperature:['อุณหภูมิร่างกาย','Temperature'],symptom:['อาการและความรู้สึก','Symptoms and wellbeing'],photo:['ภาพบันทึกสุขภาพ','Health photo'],call:['โทรติดตามสุขภาพ','Check-in call'],meal:['อาหารที่เล่า','Meals'],glucose:['น้ำตาลในเลือด','Blood glucose'],adherence:['ความต่อเนื่องของยา','Medication consistency']};
+export const labels = Object.defineProperties({},Object.fromEntries(Object.entries(labelText).map(([key,[thai,english]])=>[key,{enumerable:true,get:()=>tr(thai,english)}])));
+export const eventIcon = { dose: 'pill', bloodPressure: 'heart', temperature: 'thermometer', symptom: 'book', photo: 'image', call: 'phone', meal: 'book', glucose: 'heart', adherence: 'pill' };
 
 function seedEvents() {
   const today = dateKey();
@@ -24,24 +26,27 @@ function seedEvents() {
   return events;
 }
 export function readState() {
-  const fallback = { version: 1, seedDate: dateKey(), events: seedEvents(), largeText: false, sharing: { logs: false, medication: false }, activities: {}, snooze: null };
+  const fallback = { version: 1, seedDate: dateKey(), events: seedEvents(), largeText: false, language:getLanguage(), sharing: { logs: false, medication: false }, activities: {}, snooze: null };
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
     if (!saved || saved.version !== 1 || !Array.isArray(saved.events)) return fallback;
     const events = saved.events.filter(e => e && typeof e.id === 'string' && validKinds.includes(e.kind) && !Number.isNaN(Date.parse(e.occurredAt)) && e.payload && typeof e.payload === 'object');
-    return { ...fallback, ...saved, events: saved.seedDate === dateKey() ? events : [...seedEvents(), ...events.filter(e => !e.isDemo)], seedDate: dateKey(), sharing: { ...fallback.sharing, ...saved.sharing }, activities: saved.activities || {} };
+    const migrated = events.map(e => ({...e,confirmed:e.confirmed ?? (!e.isDemo && ['manual','voice'].includes(e.source))}));
+    return { ...fallback, ...saved, events: saved.seedDate === dateKey() ? migrated : [...seedEvents(), ...migrated.filter(e => !e.isDemo)], seedDate: dateKey(), sharing: { ...fallback.sharing, ...saved.sharing }, activities: saved.activities || {} };
   } catch { return fallback; }
 }
 export function persist(state) {
   try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
   catch { return false; }
 }
-export const newEvent = (kind, payload, source = 'manual') => ({ id: crypto.randomUUID(), kind, payload, source, isDemo: false, occurredAt: new Date().toISOString() });
+export const newEvent = (kind, payload, source = 'manual') => ({ id: crypto.randomUUID(), kind, payload, source, confirmed: true, isDemo: false, occurredAt: new Date().toISOString() });
 export const latest = (events, kind) => events.filter(e => e.kind === kind).sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt))[0];
-export const doseTaken = (events, scheduleId) => events.some(e => e.kind === 'dose' && !e.isDemo && e.payload.scheduleId === scheduleId && e.payload.dateKey === dateKey());
+export const doseTaken = (events, scheduleId) => events.some(e => !e.isDemo && e.payload.scheduleId === scheduleId && ((e.kind === 'dose' && e.payload.dateKey === dateKey()) || (e.kind === 'adherence' && e.confirmed === true && e.payload.status === 'taken' && dateKey(new Date(e.occurredAt)) === dateKey())));
 export const escapeHTML = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const describe = e => {
   if (e.kind === 'bloodPressure') return `${e.payload.systolic}/${e.payload.diastolic} mmHg`;
+  if (e.kind === 'glucose') return `${e.payload.value} mg/dL · ${({fasting:tr('ก่อนอาหารเช้า หลังงดอาหาร','Fasting, before breakfast'),before_meal:tr('ก่อนอาหาร','Before a meal'),after_meal:tr('หลังอาหาร','After a meal'),random:tr('วัดระหว่างวัน','Random reading'),unknown:tr('ไม่ได้ระบุเวลามื้ออาหาร','Meal timing not recorded')})[e.payload.mealRelation] || tr('ไม่ได้ระบุเวลามื้ออาหาร','Meal timing not recorded')}`;
+  if (e.kind === 'meal') return `${e.payload.description || e.payload.text || labels.meal} · ${tr('ค่าประมาณโภชนาการ','Estimated nutrition')}`;
   if (e.kind === 'temperature') return `${Number(e.payload.value).toFixed(1)} °C`;
   return e.payload.text || e.payload.name || labels[e.kind];
 };
