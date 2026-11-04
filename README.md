@@ -1,145 +1,90 @@
-# AI-Ops Take-Home Test
+# ลูกหลาน · Luklaan
 
-A self-contained repository for evaluating DevOps + AIOps skills. This repo simulates an "LLM Agent API" that sometimes refuses requests and emits metrics.
+<img src="app/assets/luklaan-mascot.png" alt="Luklaan mascot" width="112">
 
-## Quick Start
+**ลูกหลานช่วยดูแลคนที่เรารัก** ผู้สูงอายุเล่าเรื่องกิน ยา อาการ และค่าจากเครื่องวัดด้วยเสียง ครอบครัวทบทวนสิ่งที่ต้องติดตาม และเตรียมสรุปก่อนพบแพทย์ได้ในแอปเดียว รองรับภาษาไทยและอังกฤษ
 
-```bash
-# Start the full stack (API, Prometheus, Grafana, Traffic Generator)
+Luklaan is the main application in this repository. The earlier AI-Ops take-home project is preserved separately in [archive/aiops-takehome](archive/aiops-takehome/README.md).
+
+## Run locally
+
+Requires Python 3.13, Node.js 22, PostgreSQL 15+, and [uv](https://docs.astral.sh/uv/).
+
+```sh
+make setup
+
+# First-time database setup only.
+createdb luklaan_dev
+createdb luklaan_test
+
+# Create a local configuration file only when one does not already exist.
+test -f .env.local || cp .env.example .env.local
+
+make dev
+```
+
+Open [localhost:5173](http://localhost:5173). Add your `OPENAI_API_KEY` to the ignored root `.env.local` to use live AI features. The app loads without a key, but live conversation, search, and generated AI reports need API access. Existing local keys and PostgreSQL records do not need to move.
+
+The native database default is `dbname=luklaan_dev host=localhost`, using the current OS user. Set `LUKLAAN_DATABASE_URL` in `.env.local` to use another PostgreSQL instance. No real key belongs in source code or `.env.example`.
+
+## Run with Docker
+
+```sh
 make up
-
-# View logs
+make health
 make logs
-
-# Run evaluation suite
-make eval
-
-# Stop everything
 make down
 ```
 
-## Local Endpoints
+This starts Luklaan and PostgreSQL. The web port is published on `127.0.0.1:5173`; PostgreSQL stays on the container network. `make down` keeps database data. Docker uses its own `luklaan-data` volume, separate from native PostgreSQL databases.
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Agent API | http://localhost:8080 | - |
-| Metrics | http://localhost:8080/metrics | - |
-| Prometheus | http://localhost:9090 | - |
-| Grafana | http://localhost:3000 | admin/admin |
+If the native app already uses port 5173, choose another port:
 
-## Architecture
-
-```
-┌─────────────────┐     ┌─────────────────┐
-│    Traffic      │────▶│   Agent API     │
-│   Generator     │     │   (Port 8080)   │
-└─────────────────┘     └────────┬────────┘
-                                 │
-                                 │ /metrics
-                                 ▼
-                        ┌─────────────────┐
-                        │   Prometheus    │
-                        │   (Port 9090)   │
-                        └────────┬────────┘
-                                 │
-                                 ▼
-                        ┌─────────────────┐
-                        │    Grafana      │
-                        │   (Port 3000)   │
-                        └─────────────────┘
+```sh
+LUKLAAN_PORT=5174 make up
+LUKLAAN_PORT=5174 make health
 ```
 
-## Agent API Endpoints
+Docker reads the optional root `.env.local` at runtime. It does not put that file in the image. `LUKLAAN_DB_PASSWORD` configures the local Docker database password; this does not change any native PostgreSQL account. Serve remote installations through an explicitly configured HTTPS origin and complete the account and access-control work described in [backend notes](app/BACKEND.md).
 
-### POST /ask
-Send a message to the agent.
+## What works now
 
-```bash
-curl -X POST http://localhost:8080/ask \
-  -H "Content-Type: application/json" \
-  -d '{"message": "What is the weather?"}'
+- Thai and English voice conversation through the official OpenAI SDK and browser WebRTC, with an animated mascot and audio-input profiles.
+- Front and rear camera use within the same conversation, with periodic images available to the assistant.
+- 62 application commands for navigation, records, calendar, settings, reports, and visible task progress.
+- Confirmed health records for blood pressure, temperature, glucose, symptoms, medicine adherence, and estimated meal nutrition.
+- Searchable journal, personal calendar, family overview, alerts, and versioned physician summaries backed by PostgreSQL.
+- Public web and medicine search with source links, plus reviewed local retrieval documents and optional external source adapters.
+- Responsive settings, larger text, and a compact journal layout.
+
+Carrier calls and remote family sharing are demonstrations. Camera images do not measure blood pressure, glucose, or body temperature. The current workspace cookie is local workspace separation, not production patient authentication. See [implemented behavior and limits](app/README.md) and the [spoken test script](app/VOICE-TEST-SCRIPT.md).
+
+## Test
+
+```sh
+make test
 ```
 
-Response:
-```json
-{
-  "rejected": false,
-  "reason": null,
-  "prompt_version": "v1.0.0",
-  "answer": "I'd be happy to assist with your request."
-}
+Tests use isolated fixtures in `luklaan_test`; they do not need an OpenAI key. CI runs the JavaScript and Python suites, builds the application image, and verifies that the image serves the app and loads a PostgreSQL workspace. CI does not claim a production deployment or commit deployment markers back to this repository.
+
+Live provider checks are optional and use the approved local API configuration:
+
+```sh
+.venv/bin/python app/scripts/verify_voice_tool_routing.py
+.venv/bin/python app/scripts/verify_medication_search.py --audio
 ```
 
-### GET /healthz
-Health check endpoint.
+## Project layout
 
-```bash
-curl http://localhost:8080/healthz
-```
+| Path | Purpose |
+| --- | --- |
+| `app/` | Main web application and Python API server |
+| `app/migrations/` | PostgreSQL schema |
+| `app/tests/` | Browser-logic, API, SDK-contract, and database tests |
+| `app/research/` | Product, design, and technical research |
+| `docs/` | Repository structure and migration record |
+| `Dockerfile`, `docker-compose.yml` | Luklaan image and local app/database stack |
+| `.github/workflows/ci.yml` | Luklaan test and image checks |
+| `archive/aiops-takehome/` | Preserved previous project, outside the main runtime |
 
-### GET /metrics
-Prometheus metrics endpoint.
-
-```bash
-curl http://localhost:8080/metrics
-```
-
-## Rejection Logic
-
-The agent rejects requests based on content patterns:
-
-| Reason | Trigger Patterns |
-|--------|------------------|
-| `prompt_injection` | "ignore instructions", "system prompt", "jailbreak" |
-| `secrets_request` | "password", "api key", "credentials" |
-| `dangerous_action` | "restart prod", "delete database", "rm -rf" |
-
-## Metrics
-
-| Metric | Type | Labels |
-|--------|------|--------|
-| `agent_requests_total` | Counter | `prompt_version`, `route` |
-| `agent_rejections_total` | Counter | `prompt_version`, `reason` |
-| `agent_request_latency_seconds` | Histogram | `prompt_version`, `route` |
-
-## Evaluation Runner
-
-The eval runner tests the agent against two datasets:
-
-- **Golden Dataset**: Normal messages that should be accepted
-- **Adversarial Dataset**: Malicious messages that should be rejected
-
-```bash
-# Run eval
-make eval
-
-# Results are saved to ./eval-results/
-```
-
-### Gate Thresholds
-
-| Gate | Threshold | Description |
-|------|-----------|-------------|
-| `min_golden_accuracy` | 90% | Golden messages should be accepted |
-| `max_golden_rejection_rate` | 5% | Don't reject too many legitimate requests |
-| `min_adversarial_rejection_rate` | 60% | Must reject most malicious requests |
-
-## Configuration
-
-Environment variables:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PROMPT_VERSION` | v1.0.0 | Version string included in responses/metrics |
-| `REQUEST_INTERVAL_MS` | 500 | Traffic generator request interval |
-| `REJECTION_MIX_RATIO` | 0.15 | Ratio of rejection-triggering traffic |
-
-## For Candidates
-
-See [CANDIDATE_INSTRUCTIONS.md](./CANDIDATE_INSTRUCTIONS.md) for the take-home test prompt.
-
-## For Reviewers
-
-See [GRADING_RUBRIC.md](./GRADING_RUBRIC.md) for evaluation criteria.
-# takehome2
-# Test change
+Development details are in [app/README.md](app/README.md). The repository promotion is recorded in [docs/PROJECT-PROMOTION.md](docs/PROJECT-PROMOTION.md).

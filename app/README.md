@@ -1,6 +1,8 @@
-# ลูกหลาน — ช่วยดูแลคนที่เรารัก
+# Luklaan application notes
 
 Family members help care for their loved ones. Older adults talk naturally; family members review confirmed observations, what needs attention and what to ask next. This is a local functional prototype, not a production clinical monitoring service.
+
+The main project entry point and supported commands are in the [root README](../README.md).
 
 ## Run
 
@@ -8,9 +10,9 @@ Use Python 3.10+ and PostgreSQL 15+.
 
 ```sh
 uv venv --python python3 .venv
-uv pip install --python .venv/bin/python -r prototype/requirements.txt
+uv pip install --python .venv/bin/python -r app/requirements.txt
 createdb luklaan_dev
-.venv/bin/python prototype/server.py --port 5173
+.venv/bin/python app/server.py --port 5173
 ```
 
 The current machine already has a local PostgreSQL service; isolated `luklaan_dev` and `luklaan_test` databases were created for this project. No existing database or PostgreSQL configuration was changed. Default local connection: `dbname=luklaan_dev host=localhost` using the OS user. Set `LUKLAAN_DATABASE_URL` through the process environment for another deployment. The approved ignored repository-root `.env.local` contains the existing OpenAI key. Do not put keys in client JavaScript, logs or Git.
@@ -20,7 +22,7 @@ Open http://localhost:5173 . The family overview is `/#care`; the physician summ
 ## Implemented
 
 - Official OpenAI Python SDK `2.54.0`: `client.responses.create` for food estimation/AI summaries and `client.realtime.client_secrets.create` for ephemeral credentials. The main key stays server-side. Browser WebRTC remains the audio/video transport; no SDK is needed to replace `RTCPeerConnection`.
-- 58 shared app voice actions plus camera and structured observation tools. Mutations require current-turn spoken confirmation. Same mounted conversation across navigation, minimizing and supplementary panels; microphone mute does not reconnect.
+- 62 shared app voice actions plus camera and structured observation tools. Mutations require current-turn spoken confirmation. Same mounted conversation across navigation, minimizing and supplementary panels; microphone mute does not reconnect.
 - Four mascot poses driven by listening/thinking/speaking/success, mic/AI audio amplitude, status-cloud feedback and reduced-motion support. No transcript wall or typed chat; conversational replies remain audio.
 - PostgreSQL persistence with psycopg 3, a bounded pool (1–6), normalized observation rows, JSONB payloads, workspace/time/kind indexes, revision checks and row locks. Confirmed records only; demo/unconfirmed records and raw audio/images are excluded.
 - Confirmed writes create versioned deterministic summaries. Explicit AI summaries read persisted records and save immutable report/evidence/model snapshots. The archive retains source evidence even if observations are later edited.
@@ -40,11 +42,11 @@ Current synchronization is a bounded full-state snapshot (5000 observations, 2MB
 
 ```sh
 createdb luklaan_test
-PATH="$PWD/.venv/bin:$PATH" node --test prototype/tests/*.test.mjs
-.venv/bin/python -m unittest discover -s prototype/tests -p 'test_*.py'
+PATH="$PWD/.venv/bin:$PATH" node --test app/tests/*.test.mjs
+.venv/bin/python -m unittest discover -s app/tests -p 'test_*.py'
 ```
 
-PostgreSQL tests use isolated generated workspaces in `luklaan_test` and clean up only their own fixtures. SDK tests use official SDK serialization through a mocked HTTP transport, including redacted error handling. Database tests cover restart persistence, household isolation, concurrent conflicts, immutable evidence, deduplication, invalid readings and acknowledgement semantics. Browser checks cover persisted archive and responsive family/physician UI. The latest browser session reached the listening state through the SDK-backed Realtime setup. Real spoken Thai recognition accuracy, physical camera answers and end-to-end latency remain unverified. Live SDK Realtime credential creation and an AI report generated from fictional persisted observations both succeeded; the report snapshot was verified in PostgreSQL. Current automated checks: 98 JavaScript and 44 Python tests passed.
+PostgreSQL tests use isolated generated workspaces in `luklaan_test` and clean up only their own fixtures. SDK tests use official SDK serialization through a mocked HTTP transport, including redacted error handling. Database tests cover restart persistence, household isolation, concurrent conflicts, immutable evidence, deduplication, invalid readings and acknowledgement semantics. Browser checks cover persisted archive and responsive family/physician UI. The latest browser session reached the listening state through the SDK-backed Realtime setup. Real spoken Thai recognition accuracy, physical camera answers and end-to-end latency remain unverified. Live SDK Realtime credential creation and an AI report generated from fictional persisted observations both succeeded; the report snapshot was verified in PostgreSQL. Current automated checks: 99 JavaScript and 47 Python tests passed.
 
 ## Voice and knowledge increment
 
@@ -82,4 +84,4 @@ The app registry exposes 62 validated commands plus camera, health observation, 
 
 Open Settings to choose Thai or English, larger text, and a speaker, headphones, or noisy-surroundings audio profile. The language choice persists in PostgreSQL. Voice commands include “Switch to English” and “เปลี่ยนเป็นภาษาไทย”. Switching during a call updates the existing Realtime session. Owned UI text and display dates change language; personal notes and archived reports keep their original wording. New AI summaries and meal explanations use the selected language.
 
-English audio smoke check with the approved local API setup: `.venv/bin/python prototype/scripts/preview_voice.py --language en --output /tmp/luklaan-english.wav`. This opt-in check makes a paid provider call and does not record a microphone.
+English audio smoke check with the approved local API setup: `.venv/bin/python app/scripts/preview_voice.py --language en --output /tmp/luklaan-english.wav`. This opt-in check makes a paid provider call and does not record a microphone.

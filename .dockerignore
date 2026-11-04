@@ -1,0 +1,17 @@
+**
+!Dockerfile
+!requirements.txt
+!app/
+!app/**
+**/.env*
+**/*.pem
+**/*.key
+**/.DS_Store
+**/__pycache__/
+**/*.py[cod]
+**/*.log
+app/.runtime/
+app/tests/
+app/research/
+app/scripts/
+app/*.md

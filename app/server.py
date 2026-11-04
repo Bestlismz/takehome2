@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Local ลูกหลาน server. Run from any directory: python3 prototype/server.py."""
+"""Local ลูกหลาน server. Run from any directory: python3 app/server.py."""
 import argparse
 import base64
 import binascii
@@ -457,8 +457,8 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply_json(500, {"error": "ดำเนินการไม่สำเร็จ กรุณาลองใหม่ค่ะ"})
 
 
-def make_server(port=5173):
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+def make_server(port=5173, host="127.0.0.1"):
+    server = ThreadingHTTPServer((host, port), Handler)
     actual_port = server.server_port
     server.allowed_origins = {f"http://localhost:{actual_port}", f"http://127.0.0.1:{actual_port}"}
     server.allowed_origins.update(value.strip().rstrip("/") for value in os.environ.get("LUKLAAN_ALLOWED_ORIGINS", "").split(",") if value.strip())
@@ -468,8 +468,9 @@ def make_server(port=5173):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="127.0.0.1", help="Bind address. Defaults to loopback for local use.")
     parser.add_argument("--port", type=int, default=5173)
     args = parser.parse_args()
     load_local_env()
     print(f"ลูกหลาน: http://localhost:{args.port}")
-    make_server(args.port).serve_forever()
+    make_server(args.port, args.host).serve_forever()

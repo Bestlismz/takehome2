@@ -21,6 +21,6 @@
 
 JavaScript 70 และ Python 39 รายการผ่าน รวม 109 รายการ มี contract tests ว่า frontend ใช้บททักที่ server ส่งมา และยังรักษาตัวเลข/เวลา/คำยืนยันเมื่ออ่านด้วยรูปแบบเสียงใหม่ ไม่ตีความจำนวน tests เป็นคะแนนความเป็นธรรมชาติ
 
-CLI ทดสอบตัวอย่างเสียงแบบ opt-in คือ `.venv/bin/python prototype/scripts/preview_voice.py --output /absolute/path/sample.wav` ใช้ OpenAI API จริงและมี API usage เพิ่ม `--sample conversation` เพื่อสร้างตัวอย่างคุยเล่นจากข้อความสมมติ
+CLI ทดสอบตัวอย่างเสียงแบบ opt-in คือ `.venv/bin/python app/scripts/preview_voice.py --output /absolute/path/sample.wav` ใช้ OpenAI API จริงและมี API usage เพิ่ม `--sample conversation` เพื่อสร้างตัวอย่างคุยเล่นจากข้อความสมมติ
 
 ยังไม่ได้ทำ listening study กับผู้สูงอายุบนโทรศัพท์จริง จึงต้องให้ผู้ใช้ประเมินจากการคุยจริง การอ่าน transcript อย่างเดียวไม่ตัดสิน prosody สำเนียง หรือจังหวะการพูดทั้งหมด

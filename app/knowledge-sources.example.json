@@ -1,5 +1,5 @@
 {
-  "description":"Copy to prototype/.runtime/knowledge-sources.json after choosing approved public knowledge sources. No patient or household documents in this shared registry.",
+  "description":"Copy to app/.runtime/knowledge-sources.json after choosing approved public knowledge sources. No patient or household documents in this shared registry.",
   "vectorStores": [],
   "mcp": [],
   "exampleMcpEntry":{"label":"approved_public_reference","url":"https://your-approved-server.example/mcp","publicKnowledgeOnly":true,"readOnlyTools":["search","fetch"],"authorizationEnv":"OPTIONAL_SERVER_TOKEN"},

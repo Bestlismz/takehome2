@@ -1,0 +1,8 @@
+ts	phase	decision	why	evidence	result
+2026-11-04	structure	Keep the application under app and promote root commands and docs	Keep browser asset serving confined to the application directory	docs/PROJECT-PROMOTION.md	chosen
+2026-11-04	move	Archive the old stack and move prototype to app	Make Luklaan the repository entry point without deleting the earlier project	/tmp/luklaan-promotion-before.json	136 file hashes unchanged
+2026-11-04T09:28:11.795711+00:00	runtime	Use root commands and a local app/PostgreSQL Docker stack	Make the app runnable from the repository entry point	Makefile; Dockerfile; docker-compose.yml	verified local Docker build and restart persistence
+2026-11-04T09:28:11.795854+00:00	review	Keep HealthStore lazy environment loading unchanged	Its initialize method reads the configured DSN after CLI environment loading	app/tests/test_runtime_configuration.py	regression test passes; suspected bug disproved
+2026-11-04T09:28:11.795857+00:00	verification	Run application tests from app and check a clean container	Check actual behavior after the folder move	make test; docs/PROJECT-PROMOTION.md	99 JavaScript and 47 Python tests pass
+2026-11-04T09:28:11.795858+00:00	review	Review the promotion independently	Catch paths and runtime assumptions outside the implementation owners	README.md; .github/workflows/ci.yml; .dockerignore	no actionable findings
+2026-11-04T09:30:26.090802+00:00	cleanup	Remove only the isolated Docker verification stack and its test volume	Keep native PostgreSQL and the running localhost app untouched	docker compose -p luklaan-promotion-qa down --volumes	QA stack removed

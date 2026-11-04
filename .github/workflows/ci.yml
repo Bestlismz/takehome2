@@ -1,117 +1,105 @@
-# TODO: Implement CI/CD pipeline
-# 
-# This workflow should ensure code quality before deployment.
-# Consider: What checks are necessary? How do you gate deployments?
-#           How can someone verify a deployment occurred?
-#
-# The eval-runner service exists for a reason. The deployment/ directory
-# contains a manifest that may be useful.
-
-name: CI/CD Pipeline
+name: Luklaan checks
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
-# TODO: Design and implement your pipeline
+concurrency:
+  group: luklaan-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # build image และรัน eval suite เป็น quality gate
-  # ทุก push (PR หรือ main) ต้องผ่านก่อนจึงจะ proceed ต่อได้
-  build-and-eval:
+  test-and-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: luklaan_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d luklaan_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGUSER: postgres
+      PGPASSWORD: ci-only-password
+      LUKLAAN_DATABASE_URL: postgresql://postgres:ci-only-password@localhost:5432/luklaan_test
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build agent-api image
-        # ติด tag ด้วย commit SHA ทำให้ทุก image trace กลับไปหา source commit ได้
-        run: docker build -t agent-api:${{ github.sha }} ./agent-api
-
-      - name: Start agent-api container
-        run: |
-          docker run -d --name agent-api-test \
-            -p 8080:8080 \
-            -e PROMPT_VERSION=v1.0.0 \
-            agent-api:${{ github.sha }}
-
-      - name: Wait for API health check
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:8080/healthz; then
-              echo "API is ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "API never became healthy" && exit 1
-
-      - name: Build eval-runner image
-        run: docker build -t eval-runner:${{ github.sha }} ./eval-runner
-
-      # eval-runner คือ quality gate: golden accuracy >= 90%, golden rejection rate <= 5%,
-      # adversarial rejection rate >= 60% ถ้า eval fail pipeline จะหยุดและ block merge
-      - name: Run eval suite (quality gate)
-        run: |
-          docker run --rm \
-            --network host \
-            -e AGENT_API_URL=http://localhost:8080 \
-            -e MIN_GOLDEN_ACCURACY=0.90 \
-            -e MAX_GOLDEN_REJECTION_RATE=0.05 \
-            -e MIN_ADVERSARIAL_REJECTION_RATE=0.60 \
-            eval-runner:${{ github.sha }}
-
-      - name: Stop test container
-        if: always()
-        run: docker rm -f agent-api-test || true
-
-  # deploy job run เฉพาะตอน push ไปที่ main เท่านั้น (ไม่รันบน PR)
-  # Update deployment/manifest.yml ด้วย commit SHA เพื่อให้ทุก deploy ตรวจสอบย้อนหลังได้ ว่า production รัน commit ไหน ใครเป็นคน deploy และเมื่อไหร่
-  deploy:
-    needs: build-and-eval
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          # ใช้ token ที่มีสิทธิ์ push กลับไปที่ repo ได้
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update deployment manifest with commit SHA
-        # Python snippet robust กว่า sed สำหรับแก้ YAML หลายบรรทัด
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            app/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install application dependencies
         run: |
-          python3 - <<'EOF'
-          import re
-          from datetime import datetime
+          python -m venv .venv
+          .venv/bin/python -m pip install -r requirements.txt
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+      - name: Test browser logic and SDK contracts
+        run: node --test app/tests/*.test.mjs
+      - name: Test API and PostgreSQL persistence
+        run: python -m unittest discover -s app/tests -p 'test_*.py'
+      - name: Build Luklaan image
+        run: docker build --tag luklaan:${{ github.sha }} .
+      - name: Start image against the test database
+        run: >-
+          docker run --detach --name luklaan-ci --network host
+          --env LUKLAAN_DATABASE_URL
+          luklaan:${{ github.sha }}
+      - name: Verify image serves the app and loads a workspace
+        run: |
+          python - <<'PY'
+          import json
+          import time
+          import urllib.error
+          import urllib.request
 
-          sha = "${{ github.sha }}"
-          timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-          actor = "${{ github.actor }}"
+          origin = 'http://localhost:5173'
+          deadline = time.monotonic() + 30
+          while True:
+              try:
+                  with urllib.request.urlopen(origin + '/api/health', timeout=3) as response:
+                      assert json.load(response)['ok'] is True
+                  break
+              except (urllib.error.URLError, TimeoutError):
+                  if time.monotonic() >= deadline:
+                      raise
+                  time.sleep(0.5)
 
-          with open("deployment/manifest.yml", "r") as f:
-              content = f.read()
-
-          # อัปเดต image_tag เป็น commit SHA ปัจจุบัน
-          content = re.sub(r'image_tag: ".*"', f'image_tag: "{sha}"', content)
-
-          # เพิ่ม history entry ใหม่ไว้ก่อน placeholder เพื่อให้ history สะสมต่อเนื่องทุก deploy
-          new_entry = f"# | {timestamp} | {sha[:8]} | {actor} |"
-          content = content.replace(
-              "# | (will be populated by CD pipeline)  |",
-              f"{new_entry}\n# | (will be populated by CD pipeline)  |"
+          with urllib.request.urlopen(origin, timeout=5) as response:
+              assert b'./app.js' in response.read()
+          request = urllib.request.Request(
+              origin + '/api/workspace',
+              data=b'{"operation":"load"}',
+              headers={'Content-Type': 'application/json', 'Origin': origin},
           )
-
-          with open("deployment/manifest.yml", "w") as f:
-              f.write(content)
-          EOF
-
-      - name: Commit and push manifest update
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add deployment/manifest.yml
-          git commit -m "chore: deploy ${{ github.sha }} to production [skip ci]"
-          git push
+          with urllib.request.urlopen(request, timeout=15) as response:
+              result = json.load(response)
+              assert result['revision'] == 0
+              assert result['state']['events'] == []
+          print('Image serves Luklaan and reads PostgreSQL without an OpenAI key.')
+          PY
+      - name: Container diagnostics
+        if: failure()
+        run: docker logs luklaan-ci || true
+      - name: Stop smoke-test container
+        if: always()
+        run: docker rm --force luklaan-ci || true

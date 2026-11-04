@@ -32,4 +32,4 @@ grafana-data/
 .env.local
 .env.*.local
 .venv/
-prototype/.runtime/
+app/.runtime/

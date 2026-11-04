@@ -9,7 +9,7 @@
 
 ## Architecture
 
-Ground: the working directory contains no app source. Existing tracked deletions predate this task and are left untouched. All work lives under prototype/.
+Ground: the working directory contains no app source. Existing tracked deletions predate this task and are left untouched. All work lives under app/.
 Sketch: compared voice-first and task-first navigation with two independent design agents. Selected task-first because a completed dose needs one tap, with a persistent voice action. Adopted readback and explicit confirmation from voice-first.
 Data: one local event collection with id, kind, occurredAt, source, isDemo, payload. Medication schedules are separate. Consent is local prototype preference, never a claim of remote sharing.
 Implement: vanilla HTML/CSS/ES modules, browser SpeechRecognition and speechSynthesis, getUserMedia with camera lifecycle cleanup. No backend, synthetic diagnosis, device connection, or remote notification.
