@@ -27,3 +27,20 @@ test('English home renders translated owned content and preserves a personal Tha
  setLanguage('th');
  assert.match(renderHome(),/สวัสดีค่ะ คุณสมใจ/);
 });
+
+test('journal redesign keeps search, selected category and example choice in both languages',()=>{
+ const journal=source.slice(source.indexOf('function historyView()'),source.indexOf('function historyResults()',source.indexOf('function historyView()')));
+ const context=vm.createContext({html,tr,ui:{filter:'bloodPressure',historyQuery:'บันทึก "ของฉัน" <script>',showDemo:true},esc:escapeHTML,icon:()=>'',button:(_,label)=>`<button>${label}</button>`,historyResults:()=>'<article>บันทึกต้นฉบับของผู้ใช้</article>'});
+ vm.runInContext(journal,context);
+ try{
+  setLanguage('en');const markup=context.historyView();
+  assert.match(markup,/Health journal/);
+  assert.match(markup,/id="journal-search"/);
+  assert.match(markup,/value="bloodPressure" selected/);
+  assert.match(markup,/id="journal-demo" type="checkbox" checked/);
+  assert.ok(markup.includes(escapeHTML(context.ui.historyQuery)));
+  assert.ok(markup.includes('บันทึกต้นฉบับของผู้ใช้'));
+  assert.doesNotMatch(markup,/<script>/);
+  setLanguage('th');assert.match(context.historyView(),/บันทึกสุขภาพ/);
+ }finally{setLanguage('th');}
+});

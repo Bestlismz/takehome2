@@ -1,6 +1,6 @@
 const paths = {
   textSize: '<path d="M2 5h12M8 5v15M4 20h8M15 10h7M18.5 10v10M16 20h5"/>',
-  settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="2" fill="currentColor" stroke="none"/>',
+  settings: '<path d="M9.7 3.4 10.2 2h3.6l.5 1.4.5 1.4 1.5.9 1.5-.3 1.5-.3 1.8 3.1-1 1.1-1 1.2v1.8l1 1.2 1 1.1-1.8 3.1-1.5-.3-1.5-.3-1.5.9-.5 1.4-.5 1.4h-3.6l-.5-1.4-.5-1.4-1.5-.9-1.5.3-1.5.3-1.8-3.1 1-1.1 1-1.2v-1.8l-1-1.2-1-1.1 1.8-3.1 1.5.3 1.5.3 1.5-.9z"/><circle cx="12" cy="11.5" r="3"/>',
   search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
   back: '<path d="m14 6-6 6 6 6"/>',
   external: '<path d="M14 3h7v7m0-7-11 11M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/>',
