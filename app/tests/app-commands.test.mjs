@@ -12,7 +12,7 @@ const authorize = (call, overrides = {}) => authorizeAppAction(call, { transcrip
 
 test('catalog covers every app control family and all five navigation destinations', () => {
   const families = new Set(catalog.actions.map(action => action.family));
-  for (const family of ['navigation','history','accessibility','activity','call-plan','mock-call','sharing','care-plan','record','medication','report','meal','glucose','conversation','profile','about','image']) assert.ok(families.has(family), family);
+  for (const family of ['navigation','history','accessibility','call-plan','mock-call','sharing','care-plan','record','medication','report','meal','glucose','conversation','profile','about','image']) assert.ok(families.has(family), family);
   for (const route of ['today','history','medication','care','summary']) assert.deepEqual(c({ action:'navigate', route }), { action:'navigate', route });
   for (const action of ['conversation.minimize','conversation.restore','mock_call.accept','mock_call.decline']) assert.equal(c({action}).action, action);
   assert.ok(catalog.externalTools.includes('camera.capture'));

@@ -1,0 +1,7 @@
+import {tr} from './i18n.js';
+const escape=value=>String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function familyAccessMarkup(result){
+  const plan=result.activePlan,summary=result.summary || {};
+  const names={bloodPressure:tr('ความดัน','blood pressure'),glucose:tr('น้ำตาล','glucose'),adherence:tr('ความต่อเนื่องของยา','medicine routine')};
+  return `<section class="full-page family-shared-summary"><h1>${tr('สรุปสำหรับครอบครัว','Family summary')}</h1><p>${tr('อ่านข้อมูลตามสิทธิ์ที่เจ้าของพื้นที่อนุญาต','Read-only information shared by the workspace owner')}</p><h2>${tr('บันทึกที่ยืนยันแล้ว','Confirmed records')}</h2><p>${escape(summary.confirmedCount || 0)} ${tr('รายการ','records')}</p>${summary.missing?.length?`<p>${tr('ยังไม่มีบันทึก','No records yet for')}: ${summary.missing.map(kind=>escape(names[kind] || kind)).join(' · ')}</p>`:''}<h2>${tr('แผนยาที่ผ่านการทบทวน','Reviewed medication plan')}</h2>${plan?`<h3>${escape(plan.title)} · ${tr('ฉบับ','Version')} ${escape(plan.version)}</h3><ul>${plan.medications.map(row=>`<li><strong>${escape(row.name)}</strong> ${escape(row.dose)}<p>${escape(row.instructions)}</p></li>`).join('')}</ul>`:`<p>${tr('ยังไม่มีแผนที่ผ่านการทบทวน','No reviewed plan is available')}</p>`}<p class="privacy-note">${tr('ไม่แสดงเอกสารต้นฉบับหรือบันทึกสุขภาพรายรายการ ลิงก์นี้ถูกเพิกถอนได้','Source documents and individual health records are not shared. This link can be revoked.')}</p></section>`;
+}

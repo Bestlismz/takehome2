@@ -51,11 +51,15 @@ Docker reads the optional root `.env.local` at runtime. It does not put that fil
 
 - Thai and English voice conversation through the official OpenAI SDK and browser WebRTC, with an animated mascot and audio-input profiles.
 - Front and rear camera use within the same conversation, with periodic images available to the assistant.
-- 62 application commands for navigation, records, calendar, settings, reports, and visible task progress.
+- 84 application commands for navigation, records, calendar, settings, reports, and visible task progress.
 - Confirmed health records for blood pressure, temperature, glucose, symptoms, medicine adherence, and estimated meal nutrition.
+- Standard Bluetooth cuff readings and camera-assisted reading of cuff displays, with one confirmation before saving. [Device support and test limits](app/research/2026-11-04-BLOOD-PRESSURE-DEVICE.md).
+- [Versioned medication-document review, caregiver handovers, physician review annotations, and revocable family-summary links](app/CARE-WORKFLOW.md), stored in PostgreSQL.
 - Searchable journal, personal calendar, family overview, alerts, and versioned physician summaries backed by PostgreSQL.
 - Public web and medicine search with source links, plus reviewed local retrieval documents and optional external source adapters.
 - Responsive settings, larger text, and a compact journal layout.
+- Optional on-device fingertip pulse experiment using a pinned MIT-licensed PPG library. Estimates are quality-gated and kept out of clinical records. See [camera research](app/research/2026-11-04-CAMERA-VITALS.md).
+- A disabled-by-default, allowlisted Twilio greeting-test adapter. See [phone setup](app/TELEPHONY.md). It is not a scheduled AI phone-call service.
 
 Carrier calls and remote family sharing are demonstrations. Camera images do not measure blood pressure, glucose, or body temperature. The current workspace cookie is local workspace separation, not production patient authentication. See [implemented behavior and limits](app/README.md) and the [spoken test script](app/VOICE-TEST-SCRIPT.md).
 

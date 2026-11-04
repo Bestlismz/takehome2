@@ -1,3 +1,7 @@
+import {familyAccessMarkup} from './family-access-view.js';
+import {BloodPressureDevice} from './blood-pressure-device.js';
+import {updateBloodPressureView} from './blood-pressure-view.js';
+import {mountCareWorkflow,draftFromValues} from './care-workflow-view.js';
 import {tr,html,getLanguage,setLanguage,intlLocale} from './i18n.js';
 import {settingsMarkup,settingsCopy} from './settings-view.js';
 import {journalEntries,journalDays} from './history-journal.js';
@@ -28,11 +32,18 @@ const ui = { route: 'today', filter: 'all', dialog: null, attachment: null, edit
 const conversationModal = document.querySelector('#modal');
 const panelModal = document.querySelector('#panel-modal');
 const toolActivity = new ToolActivity();
-function placeToolActivity(){toolActivity.attachTo(panelModal.open?panelModal:conversationModal.open?conversationModal:document.body);}
+function placeToolActivity(){
+  const stage=conversationModal.open?conversationModal.querySelector('#conversation-stage'):null;
+  toolActivity.element.dataset.anchor=stage?'mascot':ui.voicePresentation==='docked'?'dock':'page';
+  toolActivity.attachTo(stage || (panelModal.open?panelModal:document.body));
+}
 let modal = conversationModal;
 const camera = new CameraSession();
 let phoneExperience;
 let workspace;
+let bpDevice;
+let careWorkflowController;
+let familyAccessTimer;
 const nav = [
   ['today', 'home', 'วันนี้'], ['history', 'heart', 'บันทึกสุขภาพ'], ['calendar','calendar','ปฏิทินดูแลกัน'], ['medication', 'pill', 'ยาของฉัน'], ['care', 'users', 'คนที่เรารัก'], ['summary', 'file', 'สรุปให้แพทย์'],
 ];
@@ -54,12 +65,14 @@ function addEvent(event) {
   render();
 }
 function sourceLabel(event) {
+  if(event.source==='device')return tr('รับค่าจากเครื่องวัด','Received from a measurement device');
   return event.isDemo ? tr('ข้อมูลตัวอย่าง') : ['voice','speech'].includes(event.source) ? tr('คุณยืนยันผ่านผู้ช่วย') : event.source==='camera'?tr('ภาพที่คุณยืนยัน'):tr('คุณบันทึกเอง');
 }
 function button(action, text, glyph, cls = 'button', attrs = '') {
   return `<button type="button" class="${cls}" data-action="${action}" ${attrs}>${['voice','meal-talk','glucose-talk','voice-repeat','camera-read','listen','camera-listen'].includes(action) ? mascotIconMarkup() : glyph ? icon(glyph) : ''}<span>${text}</span></button>`;
 }
 function showDialog(kind, body, className = '') {
+  careWorkflowController?.destroy();careWorkflowController=null;ui.handoverEvidence=null;
   if (ui.voicePresentation && !['voice','phone'].includes(kind)) {
     minimizeConversation();
     toolActivity.attachTo(document.body);
@@ -76,9 +89,11 @@ function showDialog(kind, body, className = '') {
   modal.innerHTML = body;
   modal.showModal();
   placeToolActivity();
+  if(kind==='phone-settings')refreshPhoneConnection(modal);
   document.body.classList.add('dialog-open');
 }
 function closeDialog() {
+  careWorkflowController?.destroy();careWorkflowController=null;ui.handoverEvidence=null;
   if(modal===panelModal) {
     toolActivity.attachTo(document.body);
     if(panelModal.open) panelModal.close();
@@ -92,6 +107,8 @@ function closeDialog() {
   endConversation();
 }
 function endConversation() {
+  careWorkflowController?.destroy();careWorkflowController=null;ui.handoverEvidence=null;
+  bpDevice?.disconnect();ui.bpVisible=false;
   ui.voicePresentation=null;
   clearTimeout(ui.mascotTimer);ui.mascotSuccessUntil=0;
   ui.stage?.destroy();
@@ -155,6 +172,7 @@ function modalHeader(title, subtitle = '', glyph = '') {
   return `<header class="modal-header"><div>${glyph ? `<span class="modal-icon">${icon(glyph)}</span>` : ''}<h2 id="modal-title">${title}</h2>${subtitle ? `<p>${subtitle}</p>` : ''}</div>${button('close', tr('ปิด'), 'close', 'icon-button close-button', tr('aria-label="ปิดหน้าต่าง"'))}</header>`;
 }
 function render() {
+  if(ui.sharedAccess)return;
   setLanguage(state.language || getLanguage());
   document.documentElement.lang=getLanguage();
   document.title=getLanguage()==='en'?'Luklaan · Care for the people we love':'ลูกหลาน · ช่วยดูแลคนที่เรารัก';
@@ -239,8 +257,111 @@ function historyView() {
     <div class="journal-meta"><p id="journal-count" role="status"></p></div>
     <div id="journal-results">${historyResults()}</div>
     <a class="journal-report" href="#summary">${icon('file')} ดูสรุปสำหรับคุณหมอ ${icon('chevron')}</a>
+    <div class="health-device-entry"><span>${tr('ความดันจากเครื่องวัด','Blood pressure from a cuff')}<small>${tr('เชื่อม Bluetooth หรืออ่านหน้าจอเครื่องด้วยกล้อง','Connect Bluetooth or read the cuff display with the camera')}</small></span>${button('bp-open',tr('รับค่าความดัน','Capture pressure'),'heart','text-button')}</div>
     <p class="privacy-note">${icon('shield')} บันทึกที่ยืนยันเก็บไว้แล้ว ยังไม่ได้ส่งให้คนดูแลหรือแพทย์</p>
   </div>`;
+}
+async function refreshPhoneConnection(root){
+  const label=root.querySelector('#telephony-connection-status'),test=root.querySelector('[data-action="phone-test-call"]');
+  try{
+    const connection=await requestJSON('/api/telephony/status',{});
+    if(!label?.isConnected)return;
+    label.textContent=connection.testReady?tr('เชื่อมต่อบริการแล้ว · พร้อมทดสอบคำทักทายหนึ่งสาย','Provider connected · One greeting test is available'):connection.testUsed?tr('ใช้สายทดสอบแล้ว ดูรายละเอียดการตั้งค่าที่เซิร์ฟเวอร์','Test call already used. Check server setup details.'):tr('ยังไม่เชื่อมต่อผู้ให้บริการโทรศัพท์ · ใช้สายสาธิตได้','No phone provider connected. In-app demo calls are available.');
+    if(test){test.hidden=!connection.testReady;test.disabled=!connection.testReady;}
+  }catch{if(label?.isConnected)label.textContent=tr('ยังตรวจการเชื่อมต่อโทรศัพท์ไม่ได้','Phone connection status is unavailable');}
+}
+async function requestTestCall(){
+  return requestJSON('/api/telephony/test',{requestId:crypto.randomUUID(),confirmed:true});
+}
+function openBloodPressure(){
+  voiceDialog({listen:false});
+  ui.bpVisible=true;ui.stage.root.dataset.bloodPressure='open';
+  ui.stage.root.querySelector('#bp-inline').hidden=false;
+  updateBloodPressureView(ui.stage.root,{phase:'idle'});
+  if(!voice.active)voice.onState?.('paused',tr('เปิดไมค์เมื่อต้องการคุย','Unmute when you want to talk'));
+}
+function discardBloodPressure(){
+  ui.bpReading=null;
+  if(['bluetooth-cuff','camera-cuff-display'].includes(ui.pendingHealth?.payload.provenance)){ui.pendingHealth=null;ui.pendingHealthSource=null;}
+}
+function closeBloodPressure({resume=false}={}){
+  ui.bpRequest=(ui.bpRequest || 0)+1;
+  bpDevice?.disconnect();ui.bpVisible=false;discardBloodPressure();
+  if(ui.stage){ui.stage.root.dataset.bloodPressure='';ui.stage.root.querySelector('#bp-inline').hidden=true;}
+  if(resume)return startCamera();
+}
+function prepareBloodPressure(reading){
+  ui.bpReading=reading;
+  ui.pendingAppAction=null;ui.pendingHealthSource='voice';ui.pendingHealthTurn=ui.userTurn || 0;ui.pendingHealthAt=Date.now();
+  ui.pendingHealth={kind:'bloodPressure',source:reading.provenance==='bluetooth-cuff'?'device':'camera',occurredAt:reading.occurredAt || new Date().toISOString(),confirmed:false,isDemo:false,payload:{...reading,confirmed:false}};
+  updateBloodPressureView(ui.stage?.root,{phase:'reading',reading,message:tr('รับค่านี้จากเครื่องแล้ว ตรวจตัวเลขก่อนยืนยันบันทึก','Reading received. Check the numbers before confirming save.')});
+}
+async function connectBloodPressure(){
+  ui.bpRequest=(ui.bpRequest || 0)+1;
+  if(!ui.bpVisible)openBloodPressure();
+  bpDevice ||= new BloodPressureDevice({onUpdate:snapshot=>{updateBloodPressureView(ui.stage?.root,snapshot);if(snapshot.reading && ui.bpVisible)prepareBloodPressure(snapshot.reading);else if(!snapshot.reading)discardBloodPressure();}});
+  return bpDevice.connect();
+}
+async function readBloodPressureDisplay(){
+  bpDevice?.disconnect();
+  if(!ui.bpVisible)openBloodPressure();
+  const request=ui.bpRequest=(ui.bpRequest || 0)+1;discardBloodPressure();
+  if(ui.cameraPhase!=='live')await startCamera();
+  if(ui.cameraPhase!=='live')throw new Error(tr('เปิดกล้องแล้วหันไปที่หน้าจอเครื่องวัดก่อนค่ะ','Open the camera and point it at the cuff monitor display first'));
+  const stage=ui.stage,session=ui.conversationId;
+  const image=camera.capture(stage.video);
+  if(!image)throw new Error(tr('ภาพยังไม่พร้อมค่ะ','The camera image is not ready'));
+  updateBloodPressureView(stage.root,{phase:'waiting',message:tr('กำลังอ่านตัวเลขจากหน้าจอเครื่องวัด','Reading numbers from the monitor display')});
+  let result;
+  try{result=await requestJSON('/api/blood-pressure-display',{image});}catch(error){if(ui.bpRequest!==request || ui.stage!==stage || !ui.bpVisible)return {ok:false,cancelled:true};discardBloodPressure();throw error;}
+  if(ui.bpRequest!==request || ui.stage!==stage || ui.conversationId!==session || !ui.bpVisible)return {ok:false,message:tr('ข้ามภาพที่ปิดไปแล้ว','The closed capture was skipped')};
+  prepareBloodPressure({...result.reading,occurredAt:new Date().toISOString()});
+  return {ok:true,reading:ui.bpReading,requiresConfirmation:true,readback:describe(ui.pendingHealth),instruction:tr('อ่านค่าความดันและบอกว่าเป็นเวลารับค่า ถามยืนยันครั้งเดียว แล้วใช้ health.confirm','Read back the pressure values and identify the receipt time. Ask once, then use health.confirm.')};
+}
+function careFormFields(){
+  const root=modal.querySelector('#care-workflow-root');
+  if(!root)return [];
+  return [...root.querySelectorAll('input[name],textarea[name],select[name]')].filter(input=>input.type!=='password' && input.type!=='file').map(input=>({field:input.name,value:input.type==='checkbox'?input.checked:input.value,form:input.closest('form')?.dataset.workflowForm,id:input.closest('form')?.dataset.id || null}));
+}
+function fillCareField(field,value,id){
+  const allowed=/^(?:title|sourceText|uncertainties|text|assignee|reviewer|note|decision|label|caregiverReviewed|medName-\d+|medDose-\d+|medInstructions-\d+|medUncertain-\d+)$/;
+  if(!allowed.test(field))throw new Error(tr('ช่องนี้ต้องกรอกด้วยตัวเองค่ะ','This field must be entered manually'));
+  const scope=id?[...modal.querySelectorAll('#care-workflow-root form')].find(form=>form.dataset.id===id):modal;
+  if(!scope)throw new Error(tr('ไม่พบแบบฟอร์มรายการนี้ค่ะ','This item form was not found'));
+  const input=[...scope.querySelectorAll('[name]')].find(element=>element.name===field);
+  if(!input || input.type==='password' || input.type==='file')throw new Error(tr('ไม่พบช่องนี้ในหน้าที่เปิดอยู่ค่ะ','This field is not present in the current view'));
+  if(input.type==='checkbox')input.checked=value===true;else input.value=String(value);
+  input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));
+  return careFormFields();
+}
+async function openCareWorkflow(tab='plans'){
+  if(ui.dialog==='care-workflow' && careWorkflowController){careWorkflowController.showTab(tab);await careWorkflowController.ready;return;}
+  showDialog('care-workflow',modalHeader(tr('ดูแลต่อเนื่อง','Care coordination'),'','users')+'<div id="care-workflow-root"></div>','care-workflow-modal');
+  careWorkflowController=mountCareWorkflow(modal.querySelector('#care-workflow-root'),{initialTab:tab,request:async body=>{if(body.operation==='handover.add' && ui.handoverEvidence)body={...body,evidenceId:ui.handoverEvidence};const result=await requestJSON('/api/care-workflow',body);if(body.operation==='handover.add')ui.handoverEvidence=null;ui.careWorkflow={...result,accessToken:undefined};if(body.operation!=='load')render();return result;},onOpenSummary:id=>openSummaryHistory(id),extract:body=>requestJSON('/api/medication-document',body),onError:toast});
+  await careWorkflowController.ready;
+}
+async function performCareWorkflow(operation,payload={}){
+  const snapshot=await requestJSON('/api/care-workflow',{operation:'load'});
+  const result=await requestJSON('/api/care-workflow',{operation,expectedRevision:snapshot.revision,...payload});
+  ui.careWorkflow={...result,accessToken:undefined};
+  if(careWorkflowController)await careWorkflowController.refresh();
+  return {...result,accessToken:undefined,storage:{saved:true,revision:result.revision}};
+}
+async function renderFamilyAccess(token){
+  clearTimeout(familyAccessTimer);
+  endConversation();
+  ui.sharedAccess=true;ui.sharedAccessToken=token;document.body.classList.add('family-access-mode');
+  document.querySelector('#sidebar').hidden=true;document.querySelector('#mobile-nav').hidden=true;
+  const content=document.querySelector('#content');content.innerHTML='<p role="status">'+tr('กำลังเปิดสรุปที่อนุญาต','Loading the shared summary')+'</p>';
+  const refresh=async()=>{
+    try{
+      const result=await requestJSON('/api/care-workflow',{operation:'access.read',token});
+      if(!ui.sharedAccess || ui.sharedAccessToken!==token)return;
+      content.innerHTML=familyAccessMarkup(result);
+      familyAccessTimer=setTimeout(refresh,15000);
+    }catch(error){if(ui.sharedAccess && ui.sharedAccessToken===token)content.innerHTML='<div class="full-page"><h1>'+tr('เปิดสรุปไม่ได้','Summary unavailable')+'</h1><p>'+esc(error.message)+'</p></div>';}
+  };
+  await refresh();
 }
 function historyResults(){
  const entries=journalEntries(state.events,{kind:ui.filter,query:ui.historyQuery || '',includeDemo:ui.showDemo});
@@ -256,13 +377,23 @@ function eventRow(event) {
   const image = event.payload.image?.startsWith('data:image/jpeg;base64,') ? event.payload.image : '';
   return html`<article class="event-row" data-event-id="${esc(event.id)}" ${ui.editingRecordId===event.id?'data-selected="true"':''}><span class="event-icon ${event.kind}">${icon(eventIcon[event.kind])}</span><div class="event-body"><div class="event-title"><h3>${labels[event.kind]}</h3><span class="source ${event.isDemo ? 'demo' : ''}">${sourceLabel(event)}</span></div><p>${esc(describe(event))}</p><small>${thaiDate(new Date(event.occurredAt), { year: undefined, month: 'short' })} · ${time(event.occurredAt)} น.</small>${image ? html`<img class="event-photo" src="${image}" alt="ภาพที่แนบกับบันทึกสุขภาพ" loading="lazy">` : ''}</div>${!event.isDemo && event.kind !== 'dose' ? button('edit', tr('แก้ไข'), 'edit', 'icon-button', html`data-id="${event.id}" aria-label="แก้ไข${labels[event.kind]}"`) : ''}</article>`;
 }
+function approvedMedicationPlan(){
+  const flow=ui.careWorkflow;
+  const plan=flow?.plans?.find(item=>item.id===flow.activePlanId && item.status==='approved');
+  return plan?{id:plan.id,title:plan.title,version:plan.version,medications:plan.medications,reviewer:plan.reviewer,reviewedAt:plan.reviewedAt}:null;
+}
+function approvedMedicationMarkup(){
+  const plan=approvedMedicationPlan();
+  if(!plan)return '';
+  return '<section class="reviewed-medication-plan"><h2>'+tr('แผนที่ผ่านการทบทวน','Reviewed plan')+' · '+esc(plan.title)+'</h2><p>'+tr('ฉบับ ','Version ')+esc(plan.version)+'</p>'+plan.medications.map(item=>'<article><h3>'+esc(item.name)+'</h3><p>'+esc(item.dose)+' · '+esc(item.instructions)+'</p></article>').join('')+'<p class="privacy-note">'+tr('อ้างอิงแผนฉบับนี้ ไม่เปลี่ยนยาหรือสร้างตารางกินยาอัตโนมัติ','This is the referenced plan. Medicines and dose schedules are not changed automatically.')+'</p></section>';
+}
 function medicationView() {
-  return html`<div class="full-page modern-page medication-page">${pageHeading(tr('ยาของฉัน'), tr('จดไว้ให้มั่นใจ ว่าวันนี้กินยาแล้วหรือยัง'), button('camera', tr('ดูฉลากยาผ่านกล้อง'), 'camera', 'button outline'))}<div class="notice glass">${icon('info')}<p>นี่คือแผนยาตัวอย่างสำหรับทดลองใช้งาน<br><strong>ใช้ยาตามคำสั่งแพทย์ ไม่ปรับยาตามต้นแบบนี้</strong></p></div><div class="medication-grid">${schedules.map(schedule => {
+  return html`<div class="full-page modern-page medication-page"><div class="care-workflow-entry">${button('care-workflow',tr('เอกสารยาและแผนที่ตรวจสอบ','Medication documents and reviewed plans'),'file','button outline')}</div>${pageHeading(tr('ยาของฉัน'), tr('จดไว้ให้มั่นใจ ว่าวันนี้กินยาแล้วหรือยัง'), button('camera', tr('ดูฉลากยาผ่านกล้อง'), 'camera', 'button outline'))}${approvedMedicationMarkup()}<div class="notice glass">${icon('info')}<p>นี่คือแผนยาตัวอย่างสำหรับทดลองใช้งาน<br><strong>ใช้ยาตามคำสั่งแพทย์ ไม่ปรับยาตามต้นแบบนี้</strong></p></div><div class="medication-grid">${schedules.map(schedule => {
     const taken = doseTaken(state.events, schedule.id);
     return html`<section class="medication-card glass"><div class="medication-top"><span class="round-icon">${icon(schedule.icon)}</span><span class="period">มื้อ${schedule.period}</span><strong class="med-time">${schedule.at}<small> น.</small></strong></div><h2>${schedule.name}</h2><p>${schedule.detail}</p><div class="medication-status ${taken ? 'is-done' : ''}">${icon(taken ? 'check' : 'clock')}${taken ? tr('คุณยืนยันว่ากินยาแล้ววันนี้') : tr('ยังไม่มีการยืนยันวันนี้')}</div>${taken ? button('undo-dose', tr('ยกเลิกการยืนยันที่กดผิด'), 'history', 'button outline', `data-id="${schedule.id}"`) : button('dose', tr('กินยาแล้ว'), 'check', 'button primary', `data-id="${schedule.id}"`)}${!taken && schedule.id === 'morning' ? button('snooze', state.snooze && state.snooze > Date.now() ? html`เลื่อนถึง ${time(state.snooze)} น.` : tr('เตือนอีกครั้งใน 10 นาที'), 'clock', 'text-button snooze-button') : ''}</section>`;
   }).join('')}</div><section class="glass medication-history"><div class="section-heading"><h2>การกินยาที่คุณบันทึก</h2>${icon('history')}</div>${state.events.filter(e => e.kind === 'dose').length ? state.events.filter(e => e.kind === 'dose').slice().reverse().map(eventRow).join('') : tr('<p class="muted">เมื่อกด “กินยาแล้ว” รายการจะมาอยู่ตรงนี้ค่ะ</p>')}</section><p class="privacy-note">${icon('clock')} การเลื่อนเตือนทำงานขณะเปิดเว็บนี้ไว้ การแจ้งเตือนเมื่อปิดแอปต้องเชื่อมระบบเพิ่มเติม</p></div>`;
 }
-function careView() { return familyDashboardMarkup(state,workspace); }
+function careView() { return '<div class="care-workflow-entry">'+button('care-workflow',tr('แผนยา ส่งต่องาน และสิทธิ์','Plans, handovers and access'),'users','button outline')+'</div>'+familyDashboardMarkup(state,workspace); }
 function careSharingView() {
   const active = state.sharing.logs || state.sharing.medication;
   return html`<div class="full-page modern-page care-page">${pageHeading(tr('ให้ความห่วงใย อยู่ใกล้กัน'), tr('คุณเลือกได้ ว่าอยากให้ใครเห็นอะไรบ้าง'), button('phone-settings', tr('ตั้งเวลาให้ลูกหลานโทรหา'), 'phone', 'button outline'))}<div class="care-layout"><section class="glass consent-panel"><div class="family-person large"><span class="avatar peach">พ</span><div><h2>พิมพ์ · ลูกสาว</h2><span>ตัวอย่างคนดูแลของคุณ</span></div><span class="source demo">โหมดทดลอง</span></div><p>ลองเลือกข้อมูลที่อยากแบ่งปัน<br>เพื่อดูตัวอย่างหน้าจอของคนดูแล</p><label class="toggle-row"><span><strong>บันทึกสุขภาพและอาการ</strong><small>ค่าที่วัดได้ อาการ และเวลาที่บันทึก</small></span><input type="checkbox" role="switch" data-setting="logs" ${state.sharing.logs ? 'checked' : ''}><span class="toggle-ui"></span></label><label class="toggle-row"><span><strong>การยืนยันกินยา</strong><small>ดูได้ว่าวันนี้ยืนยันมื้อไหนแล้ว</small></span><input type="checkbox" role="switch" data-setting="medication" ${state.sharing.medication ? 'checked' : ''}><span class="toggle-ui"></span></label><div class="consent-note">${icon('shield')}<p>สวิตช์นี้เปลี่ยนเฉพาะภาพตัวอย่าง<br>ยังไม่เชื่อมบัญชีหรือส่งข้อมูลให้บุคคลอื่น</p></div></section><section class="glass caregiver-preview"><div class="section-heading"><h2>ตัวอย่างฝั่งคนดูแล</h2>${icon('users')}</div><div class="preview-person"><span class="avatar">ส</span><div><strong>วันนี้ของคุณแม่สมใจ</strong><small>${thaiDate()}</small></div></div>${!active ? html`<div class="empty-state">${icon('shield')}<h3>พื้นที่ส่วนตัวของคุณแม่</h3><p>ข้อมูลจะปรากฏเมื่อคุณแม่เลือกแบ่งปัน</p></div>` : `${state.sharing.medication ? html`<div class="care-summary"><h3>เรื่องยาในวันนี้</h3>${schedules.map(s => `<div>${s.name}<span>${doseTaken(state.events, s.id) ? tr('ยืนยันแล้ว') : tr('ยังไม่มีบันทึก')}</span></div>`).join('')}</div>` : ''}${state.sharing.logs ? html`<div class="care-summary"><h3>บันทึกสุขภาพล่าสุด</h3>${state.events.filter(e => ['bloodPressure', 'temperature', 'symptom'].includes(e.kind)).sort((a,b) => Date.parse(b.occurredAt)-Date.parse(a.occurredAt)).slice(0, 3).map(e => `<div><span>${labels[e.kind]}<small>${sourceLabel(e)}</small></span><strong>${esc(describe(e))}</strong></div>`).join('')}</div>` : ''}`}</section></div><section class="doctor-banner glass"><span class="round-icon">${icon('file')}</span><div><h2>เรื่องราวระหว่างนัด ให้คุณหมอเห็นภาพ</h2><p>รวมยา อาการ และค่าที่วัดในรายงานเดียว</p></div>${button('report', tr('ดูตัวอย่างรายงาน'), 'arrow', 'button primary')}</section></div>`;
@@ -330,7 +461,8 @@ const voice = new RealtimeVoiceSession((phase, message) => {
   if (toggle) {
     toggle.setAttribute('aria-pressed', String(voice.active && !voice.inputMuted));
     toggle.setAttribute('aria-label', voice.active && !voice.inputMuted ? tr('พักไมโครโฟน') : tr('เปิดไมโครโฟน'));
-    toggle.querySelector('span').textContent = voice.active && !voice.inputMuted ? tr('พักไมค์') : tr('เปิดไมค์');
+    const label=toggle.querySelector('span');
+    if(label)label.textContent = voice.active && !voice.inputMuted ? tr('พักไมค์') : tr('เปิดไมค์');
     toggle.classList.toggle('mic-active', voice.active && !voice.inputMuted);
   }
 }, () => {}, level => document.querySelectorAll('.voice-sphere,.sound-wave,.stage-thought').forEach(sphere => sphere.style.setProperty('--level', level)), {
@@ -531,6 +663,14 @@ document.addEventListener('click', async event => {
     try{await updateAudioProfile(target.dataset.profile);profileDialog();modal.querySelector(`[data-action="settings-audio"][data-profile="${target.dataset.profile}"]`)?.focus({preventScroll:true});}catch(error){toast(error.message);if(target.isConnected)target.disabled=false;}
     return;
   }
+  if(action==='phone-test-call'){if(window.confirm(tr('โทรทดสอบคำทักทายหนึ่งครั้งไปยังเบอร์ที่ตั้งค่าไว้ อาจมีค่าบริการ ยืนยันไหมคะ','Place one greeting test call to the configured number? Provider charges may apply.'))){target.disabled=true;try{await requestTestCall();toast(tr('ส่งคำขอโทรทดสอบแล้ว ยังไม่ยืนยันว่ารับสาย','Test call requested. Answering has not been confirmed.'));}catch(error){toast(error.message);}refreshPhoneConnection(modal);}return;}
+  if(action==='bp-open'){openBloodPressure();return;}
+  if(action==='bp-connect'){await connectBloodPressure();return;}
+  if(action==='bp-camera-read'){try{await readBloodPressureDisplay();}catch(error){toast(error.message);updateBloodPressureView(ui.stage?.root,{phase:'error',message:error.message});}return;}
+  if(action==='bp-confirm'){try{if(ui.bpReading){prepareBloodPressure(ui.bpReading);await confirmHealthObservation();}}catch(error){toast(error.message);}return;}
+  if(action==='bp-close'){await closeBloodPressure({resume:true});return;}
+  if(action==='handover-alert'){const alert=workspace.alerts.find(item=>item.id===id);if(alert){await openCareWorkflow('handover');ui.handoverEvidence=alert.evidenceId;fillCareField('text',alert.title+' · '+alert.action);}return;}
+  if(action==='care-workflow'){await openCareWorkflow(target.dataset.section || 'plans');return;}
   if (phoneExperience.action(action)) return;
   if (action === 'glucose-talk') { voiceDialog(); voice.speak(tr('วัดน้ำตาลได้เท่าไหร่คะ')); }
   else if (action === 'meal-talk') { voiceDialog(); voice.speak(tr('มื้อนี้กินอะไรไปบ้างคะ')); }
@@ -591,7 +731,6 @@ document.addEventListener('click', async event => {
   else if (action === 'audio-settings') audioSettingsDialog();
   else if (action === 'audio-profile') {try {await updateAudioProfile(target.dataset.profile);audioSettingsDialog();}catch(error){toast(error.message);}}
   else if (action === 'web-search-open') webSearchDialog();
-  else if (action === 'activity-open') {placeToolActivity();toolActivity.setCollapsed(false);}
   else if (action === 'knowledge-sources') await knowledgeSourcesDialog();
   else if (action === 'summary-history') {try{await openSummaryHistory();}catch(error){toast(error.message);}}
   else if (action === 'alert-acknowledge') { try { await workspace.acknowledge(target.dataset.id);toast(tr('รับทราบแล้วค่ะ ยังต้องติดตามจนกว่าจะได้รับการดูแล')); }catch(error){toast(error.message);} }
@@ -623,12 +762,17 @@ for(const dialog of [conversationModal,panelModal]) {
   dialog.addEventListener('click',event=>{ if(event.target===dialog && event.offsetX>=dialog.clientWidth) { modal=dialog;closeDialog(); } });
 }
 document.addEventListener('visibilitychange', () => {
+  if(ui.sharedAccess){if(!document.hidden)renderFamilyAccess(ui.sharedAccessToken);return;}
+  if(document.hidden){bpDevice?.disconnect();}
   if (document.hidden) { camera.stop(); voice.stop(); if (ui.dialog === 'voice') hideSessionCamera(); }
   else scheduleSnooze();
 });
-window.addEventListener('pagehide', () => { camera.stop(); voice.stop(); });
+window.addEventListener('pagehide', () => { clearTimeout(familyAccessTimer); bpDevice?.disconnect();  camera.stop(); voice.stop(); });
 function route() {
   const next = window.location.hash.slice(1);
+  if(next.startsWith('family-access=')){renderFamilyAccess(decodeURIComponent(next.slice(14)));return;}
+  clearTimeout(familyAccessTimer);ui.sharedAccess=false;ui.sharedAccessToken=null;document.body.classList.remove('family-access-mode');
+  document.querySelector('#sidebar').hidden=false;document.querySelector('#mobile-nav').hidden=false;
   if (next === 'content') { document.querySelector('#content').focus(); return; }
   ui.route = nav.some(([key]) => key === next) ? next : 'today';
   ui.recordDraft = null;
@@ -644,7 +788,7 @@ scheduleSnooze();
 
 function mealJournal() { return mealJournalMarkup(state); }
 function summaryTeaser() { return summaryTeaserMarkup(); }
-function summaryView() { return summaryPageMarkup(state).replace('<div id="physician-ai-narrative"',briefMarkup(state,{audience:'physician',alerts:workspace?.alerts || []})+'<div id="physician-ai-narrative"'); }
+function summaryView() { return '<div class="care-workflow-entry">'+button('care-workflow',tr('ทบทวนรายงานฉบับที่เก็บไว้','Review a stored report'),'file','button outline','data-section="review"')+'</div>'+summaryPageMarkup(state).replace('<div id="physician-ai-narrative"',briefMarkup(state,{audience:'physician',alerts:workspace?.alerts || []})+'<div id="physician-ai-narrative"'); }
 function mealDialog() {
   showDialog('meal', html`${modalHeader(tr('มื้อนี้กินอะไร'), tr('ลูกหลานจะถามปริมาณเพิ่ม และอ่านทวนก่อนบันทึก'), 'book')}<form id="meal-form" class="record-form"><label class="field-label">อาหารและปริมาณ<textarea name="description" required maxlength="2000" rows="3" placeholder="เช่น ข้าวกะเพราไก่ 1 จาน ไข่ดาว 1 ฟอง"></textarea></label><label class="field-label">ภาพอาหาร ถ้ามี<input name="image" type="file" accept="image/*" capture="environment"></label><p class="field-help">คำเล่าและภาพที่เลือกจะส่งให้ OpenAI เพื่อประมาณอาหาร</p><p id="meal-status" role="status"></p><div id="meal-estimate"></div><button class="button primary full" type="submit">ช่วยประมาณมื้อนี้</button><div id="meal-confirm"></div></form>`,'meal-modal');
 }
@@ -682,6 +826,7 @@ async function confirmHealthObservation() {
   ui.pendingHealth = null; ui.savedTurn = ui.userTurn;
   if(ui.dialog === 'meal') closeDialog();
   await workspace.flush();
+  if(pending.kind==='bloodPressure' && ['bluetooth-cuff','camera-cuff-display'].includes(pending.payload.provenance)){ui.bpReading=null;updateBloodPressureView(ui.stage?.root,{phase:'saved',reading:pending.payload,message:tr('บันทึกค่านี้แล้ว','Reading saved')});}
   showMascotSuccess();
   toast(tr('บันทึกข้อมูลที่ยืนยันลงฐานข้อมูลแล้วค่ะ'));
   return true;
@@ -716,6 +861,14 @@ async function realtimeTool(call) {
 }
 function proposalReadback(call){
   if(!call)return '';
+  if(call.action==='medication_plan.draft'){const draft=JSON.parse(call.draftJson);return [draft.title,...draft.medications.map(row=>[row.name,row.dose,row.instructions].join(' '))].join(' · ');}
+  if(call.action==='handover.add')return call.text+' · '+call.assignee;
+  if(call.action==='access.create')return tr('สร้างลิงก์ให้อ่านสรุปสำหรับ ','Create a read-only summary link for ')+call.text;
+  if(call.action==='access.revoke'){const grant=ui.careWorkflow?.grants?.find(item=>item.id===call.id);return tr('เพิกถอนสิทธิ์อ่านสรุปของ ','Revoke summary access for ')+(grant?.label || tr('ผู้รับสิทธิ์ที่เลือก','the selected recipient'));}
+  if(call.action==='handover.complete'){const item=ui.careWorkflow?.handovers?.find(item=>item.id===call.id);return tr('รับช่วงงานแล้ว: ','Mark handover complete: ')+(item?.text || '')+' · '+(item?.assignee || '');}
+  if(call.action==='medication_plan.submit' || call.action==='medication_plan.review'){const plan=ui.careWorkflow?.plans?.find(item=>item.id===call.id);return (call.action==='medication_plan.submit'?tr('ส่งแผนให้ผู้ทบทวน ','Submit plan for review '):call.decision==='approved'?tr('บันทึกผลว่าแผนผ่านการตรวจ ','Record plan approval '):tr('บันทึกผลว่าต้องแก้ไขแผน ','Record requested plan corrections '))+(plan?.title || '')+tr(' ฉบับ ',' version ')+(plan?.version || '');}
+  if(call.action==='report.review'){const report=ui.careWorkflow?.summaryOptions?.find(item=>item.id===call.id);return (call.decision==='reviewed'?tr('บันทึกว่าทบทวนรายงานแล้ว ','Record a completed review of report '):tr('ขอให้ตรวจแก้รายงาน ','Request report corrections '))+(report?new Date(report.createdAt).toLocaleDateString(intlLocale()):'');}
+  if(call.action==='telephony.test')return tr('โทรทดสอบคำทักทายหนึ่งครั้งไปยังเบอร์ที่ตั้งค่าไว้ อาจมีค่าบริการ ยืนยันไหมคะ','Place one greeting test call to the configured number. Provider charges may apply. Confirm?');
   const record=call.id?state.events.find(e=>e.id===call.id && !e.isDemo):null;
   const plan=call.id?(state.calendarPlans || []).find(p=>p.id===call.id):null;
   const stamp=value=>new Date(value).toLocaleString(intlLocale(),{timeZone:'Asia/Bangkok',dateStyle:'medium',timeStyle:'short'});
@@ -745,7 +898,7 @@ async function performTool({tool,args}) {
     if(!workspace?.ready || workspace.blocked)throw new Error(tr('ฐานข้อมูลยังไม่พร้อม ขอเปิดฉบับล่าสุดก่อนจดเพิ่มค่ะ'));
     if (ui.savedTurn != null && ui.savedTurn === ui.userTurn) return {saved:true,message:tr('บันทึกรายการนี้แล้ว ไม่บันทึกซ้ำ')};
     const confirmedSpeech = ui.pendingHealthSource==='voice' && ui.pendingHealthTurn<ui.userTurn && ui.transcriptTurn===ui.userTurn && isExplicitConfirmation(ui.lastUserTranscript) && Date.now()-ui.pendingHealthAt<300000;
-    if (ui.pendingHealth && confirmedSpeech && args.confirmed===true) { await confirmHealthObservation(); return {saved:true,message:tr('บันทึกข้อมูลที่ผู้ใช้ยืนยันแล้ว คุยต่อได้')}; }
+    if (ui.pendingHealth && confirmedSpeech) { await confirmHealthObservation(); return {saved:true,message:tr('บันทึกข้อมูลที่ผู้ใช้ยืนยันแล้ว คุยต่อได้')}; }
     const kind = args.kind === 'bloodGlucose' ? 'glucose' : args.kind;
     let observation;
     if(kind === 'meal') {
@@ -813,7 +966,7 @@ async function applyLanguage(language){
   return {ok:true,language,message:language==='en'?'Menus and conversation are now in English':'เปลี่ยนเมนูและภาษาสนทนาเป็นภาษาไทยแล้ว'};
 }
 function currentVoiceContext(includeRecords = true) {
-  return {language:getLanguage(),interface:interfaceSnapshot(ui,{form:panelModal.open?panelModal.querySelector('form'):null,activityCollapsed:toolActivity.collapsed}),today:dateKey(),calendarDate:ui.calendarDate || dateKey(),calendarPlans:(state.calendarPlans || []).filter(p=>p.status!=='cancelled' && p.date>=(ui.calendarDate || dateKey())).sort((a,b)=>a.date.localeCompare(b.date)||a.at.localeCompare(b.at)).slice(0,30),audioProfile:state.audioProfile || 'speaker',now:new Date().toISOString(),timeZone:'Asia/Bangkok',knowledge:{local:tr('เอกสารสาธารณะที่คัดไว้'),web:tr('web_search ค้นเว็บไซต์ทั่วไปได้ ไม่แนบข้อมูลผู้ป่วย'),external:tr('MCP เพิ่มเติมต้องตั้งค่า')},route:ui.route,filter:ui.filter,historyQuery:ui.historyQuery || '',showDemo:ui.showDemo===true,largeText:state.largeText,sharing:state.sharing,callPlan:state.callPlan || {},profile:state.profile || {},schedules,activities:state.activities,editingRecordId:(ui.dialog==='record'?ui.editing:ui.editingRecordId) || null,pendingAction:ui.pendingAppAction?.call || null,pendingHealth:ui.pendingHealth || null,records:includeRecords?state.events.filter(e=>!e.isDemo && e.confirmed).slice(-20).map(e=>({...e,payload:Object.fromEntries(Object.entries(e.payload).filter(([k])=>!['image','frames','audio'].includes(k)))})):undefined,alerts:workspace?.alerts.slice(0,20) || [],storage:{revision:workspace?.revision,ready:workspace?.ready,error:workspace?.error},limitations:[tr('ไมค์ที่ปิดแล้วต้องแตะเปิดใหม่'),tr('การแบ่งปันเป็นภาพตัวอย่างในเครื่อง'),tr('โทรเข้าเป็นสายสาธิต'),tr('การบันทึก PDF และเลือกไฟล์ใช้หน้าต่างระบบ')]};
+  return {language:getLanguage(),interface:interfaceSnapshot(ui,{form:panelModal.open?panelModal.querySelector('form'):null,activityCollapsed:toolActivity.collapsed}),today:dateKey(),calendarDate:ui.calendarDate || dateKey(),calendarPlans:(state.calendarPlans || []).filter(p=>p.status!=='cancelled' && p.date>=(ui.calendarDate || dateKey())).sort((a,b)=>a.date.localeCompare(b.date)||a.at.localeCompare(b.at)).slice(0,30),cameraVitals:{mode:ui.bpVisible?'bloodPressure':'conversation',bloodPressure:ui.bpReading || null},audioProfile:state.audioProfile || 'speaker',now:new Date().toISOString(),timeZone:'Asia/Bangkok',knowledge:{local:tr('เอกสารสาธารณะที่คัดไว้'),web:tr('web_search ค้นเว็บไซต์ทั่วไปได้ ไม่แนบข้อมูลผู้ป่วย'),external:tr('MCP เพิ่มเติมต้องตั้งค่า')},route:ui.route,filter:ui.filter,historyQuery:ui.historyQuery || '',showDemo:ui.showDemo===true,largeText:state.largeText,sharing:state.sharing,callPlan:state.callPlan || {},profile:state.profile || {},schedules:approvedMedicationPlan()?[]:schedules,medicationPlan:approvedMedicationPlan(),activities:state.activities,editingRecordId:(ui.dialog==='record'?ui.editing:ui.editingRecordId) || null,pendingAction:ui.pendingAppAction?.call || null,pendingHealth:ui.pendingHealth || null,records:includeRecords?state.events.filter(e=>!e.isDemo && e.confirmed).slice(-20).map(e=>({...e,payload:Object.fromEntries(Object.entries(e.payload).filter(([k])=>!['image','frames','audio'].includes(k)))})):undefined,alerts:workspace?.alerts.slice(0,20) || [],storage:{revision:workspace?.revision,ready:workspace?.ready,error:workspace?.error},limitations:[tr('ไมค์ที่ปิดแล้วต้องแตะเปิดใหม่'),tr('การแบ่งปันเป็นภาพตัวอย่างในเครื่อง'),tr('โทรเข้าเป็นสายสาธิต'),tr('การบันทึก PDF และเลือกไฟล์ใช้หน้าต่างระบบ')]};
 }
 function showMascotSuccess() {
   clearTimeout(ui.mascotTimer);
@@ -850,8 +1003,12 @@ async function executeAppAction(raw) {
   let call=validateAppAction(raw,catalog);
   if(call.action==='health.confirm' && !ui.pendingAppAction && !ui.pendingHealth)throw new Error(tr('ยังไม่มีรายการรอยืนยันค่ะ'));
   if(call.action==='health.confirm' && ui.pendingAppAction) call={...ui.pendingAppAction.call,confirmed:call.confirmed};
+  const workflowTargets={'access.revoke':'grants','handover.complete':'handovers','medication_plan.submit':'plans','medication_plan.review':'plans','report.review':'summaryOptions'};
+  if(workflowTargets[call.action]){ui.careWorkflow=await requestJSON('/api/care-workflow',{operation:'load'});if(!ui.careWorkflow[workflowTargets[call.action]]?.some(item=>item.id===call.id))throw new Error(tr('ไม่พบรายการนี้ในพื้นที่ครอบครัวค่ะ','This item was not found in your workspace'));}
+  if(call.action==='medication_plan.draft'){const form=modal.querySelector('[data-workflow-form="draft"]');if(!form)throw new Error(tr('เปิดร่างแผนยาก่อนค่ะ','Open the medication draft first'));call={...call,draftJson:JSON.stringify(draftFromValues(new FormData(form)))};}
   const confirmationContext={transcript:ui.lastUserTranscript,currentTurn:ui.userTurn,transcriptTurn:ui.transcriptTurn,session:ui.conversationId,explicitConfirmationFn:text=>isExplicitAppConfirmation(text,{action:call.action})};
   if(requiresSpokenConfirmation(call,catalog)) {
+    if(confirmationContext.transcriptTurn===confirmationContext.currentTurn && confirmationContext.explicitConfirmationFn(confirmationContext.transcript))call={...call,confirmed:true};
     if(!workspace?.ready || workspace.blocked)throw new Error(tr('ฐานข้อมูลยังไม่พร้อม ขอเปิดฉบับล่าสุดก่อนแก้ไขค่ะ'));
     if(['record.delete','record.update'].includes(call.action))findVoiceRecord(call.id);
     if(call.action==='calendar.cancel' && !(state.calendarPlans || []).some(p=>p.id===call.id && p.status!=='cancelled'))throw new Error(tr('ไม่พบนัดที่ต้องการยกเลิกค่ะ'));
@@ -862,10 +1019,10 @@ async function executeAppAction(raw) {
         call=authorizeAppAction(call,confirmationContext,catalog);
       } else call=authorizeProposal(call,ui.pendingAppAction,confirmationContext,catalog);
     }catch {
-      const staged=proposeAction(call,confirmationContext,catalog);
+      const staged=proposeAction(call,confirmationContext,catalog,ui.pendingAppAction);
       if(call.action!=='health.confirm'){ui.pendingHealth=null;ui.pendingHealthSource=null;}
       ui.pendingAppAction=staged;
-      return {...staged,readback:proposalReadback(call),instruction:tr('ยังไม่ทำรายการ อ่าน readback เป็นภาษาพูด แล้วถามยืนยัน รอเสียงรอบถัดไปก่อนเรียกคำสั่งเดิม confirmed:true หรือ health.confirm ห้ามเปลี่ยนค่าที่ผู้ใช้กำลังยืนยัน')};
+      return {...staged,readback:proposalReadback(call),instruction:tr('อ่าน readback สั้น ๆ แล้วถามยืนยันครั้งเดียว เมื่อผู้ใช้ยืนยัน ให้เรียก health.confirm ทันที ไม่เปิดแบบฟอร์มหรือถามยืนยันซ้ำ ห้ามเปลี่ยนค่าที่อ่านทวน')};
     }
   }
   let result={ok:true};
@@ -873,8 +1030,22 @@ async function executeAppAction(raw) {
     case 'language.set': result=await applyLanguage(call.language);break;
     case 'app.inspect': result.interface=currentVoiceContext(false).interface;result.operations=toolActivity.items.slice(-4).map(item=>({label:item.label,status:item.status,phase:item.phase,message:item.message}));result.message=tr('อ่านหน้าจอ รายการที่เลือก และงานล่าสุดแล้ว');break;
     case 'calendar.form.open': {const visible=currentVoiceContext(false).interface.form;const prior=visible?.kind==='calendar-plan-form' && (!call.id || call.id===visible.values.planId)?visible.values:{};const draft=Object.keys(call).length>1?{...prior,...call}:call;const selectedId=call.id || (Object.keys(call).length>1?prior.planId:undefined);if(draft.date && !validCalendarDate(draft.date))throw new Error(tr('วันที่นัดไม่ถูกต้องค่ะ'));if(draft.date)ui.calendarDate=draft.date;calendarPlanDialog(selectedId,draft);result.interface=currentVoiceContext(false).interface;result.message=tr('เตรียมแบบฟอร์มแล้ว ยังไม่บันทึก');break;}
-    case 'activity.open': toolActivity.setCollapsed(false);break;
-    case 'activity.close': toolActivity.setCollapsed(true);break;
+    case 'telephony.status': result=await requestJSON('/api/telephony/status',{});break;
+    case 'telephony.test': result=await requestTestCall();result.message=tr('ผู้ให้บริการรับคำขอโทรทดสอบแล้ว ยังไม่ยืนยันว่ารับสาย','The provider accepted the test call request. Answering has not been confirmed.');break;
+    case 'bp.open': openBloodPressure();result.message=tr('เปิดรับค่าความดันจากเครื่องวัดแล้ว','Blood pressure capture opened');break;
+    case 'bp.read_display': result=await readBloodPressureDisplay();break;
+    case 'bp.close': await closeBloodPressure({resume:true});break;
+    case 'care_workflow.open': await openCareWorkflow(call.section || 'plans');break;
+    case 'care_workflow.status': {const loaded=await requestJSON('/api/care-workflow',{operation:'load'});ui.careWorkflow=loaded;result={revision:loaded.revision,plans:loaded.plans.slice(-5),handovers:loaded.handovers.slice(-15),grants:loaded.grants,reviewerConfigured:loaded.reviewerConfigured,fields:careFormFields()};break;}
+    case 'care_workflow.field.set': result.fields=fillCareField(call.field,call.value,call.id);break;
+    case 'care_workflow.extract': if(!careWorkflowController)await openCareWorkflow('plans');result=await careWorkflowController.analyze();break;
+    case 'medication_plan.draft': result=await performCareWorkflow('plan.draft',JSON.parse(call.draftJson));break;
+    case 'access.create': await openCareWorkflow('access');{const created=await careWorkflowController.perform('access.create',{label:call.text,scope:'family_summary'});result={ok:true,grantId:created.grants.at(-1)?.id,storage:{saved:true,revision:created.revision},message:tr('สร้างลิงก์แล้ว แสดงเฉพาะบนหน้าจอ ไม่ส่งลิงก์ผ่าน AI','The link is shown locally on screen and is not sent through AI')};}break;
+    case 'medication_plan.review': case 'report.review': {const kind=call.action==='medication_plan.review'?'review-plan':'report-review';const form=[...modal.querySelectorAll('[data-workflow-form]')].find(element=>element.dataset.workflowForm===kind && (kind==='report-review' || element.dataset.id===call.id));if(!form)throw new Error(tr('เปิดแบบฟอร์มผู้ทบทวนและกรอกรหัสด้วยตัวเองก่อนค่ะ','Open the reviewer form and enter your code manually first'));const fields=new FormData(form);result=await performCareWorkflow(kind==='review-plan'?'plan.review':'report.review',{id:call.id,decision:call.decision,reviewer:String(fields.get('reviewer') || ''),reviewerToken:String(fields.get('reviewerToken') || ''),note:String(fields.get('note') || '')});break;}
+    case 'handover.add': result=await performCareWorkflow('handover.add',{text:call.text,assignee:call.assignee,...(call.id?{evidenceId:call.id}:{})});break;
+    case 'handover.complete': result=await performCareWorkflow('handover.complete',{id:call.id});break;
+    case 'medication_plan.submit': result=await performCareWorkflow('plan.submit',{id:call.id,caregiverReviewed:true});break;
+    case 'access.revoke': result=await performCareWorkflow('access.revoke',{id:call.id});break;
     case 'web.search': result=await performTool({tool:'web.search',args:{query:call.text}});break;
     case 'record.delete': {const entry=findVoiceRecord(call.id);if(['dose','call'].includes(entry.kind))throw new Error(tr('รายการนี้ใช้ยกเลิกการยืนยันกินยาหรือประวัติสายโดยตรงค่ะ'));state.events=state.events.filter(e=>e.id!==entry.id);saveState();render();result.message=tr('ลบออกจากบันทึกปัจจุบันแล้ว สรุปที่เก็บไว้ก่อนหน้านี้คงเดิม');break;}
     case 'calendar.select': selectCalendarDate(call.date);break;
@@ -934,14 +1105,17 @@ async function executeAppAction(raw) {
     case 'image.choose': {if(ui.dialog!=='meal')mealDialog();const input=document.querySelector('#meal-form input[type="file"]');try{input.showPicker();result.message=tr('เปิดตัวเลือกภาพแล้ว เลือกภาพในหน้าต่างระบบค่ะ');}catch{result={ok:false,message:tr('เบราว์เซอร์ต้องให้ผู้ใช้แตะเลือกภาพเอง หรือพูดเปิดกล้องเพื่อให้ลูกหลานดูภาพสดได้')};}break;}
     default: throw new Error(tr('ยังไม่มีตัวดำเนินการของคำสั่งนี้'));
   }
-  if(requiresSpokenConfirmation(call,catalog)) ui.pendingAppAction=null;
+  if(requiresSpokenConfirmation(call,catalog)) {
+    ui.pendingAppAction=null;
+    result.instruction=tr('ทำรายการที่ยืนยันแล้ว บอกผลสั้น ๆ ไม่ถามยืนยันซ้ำหรือให้กดบันทึกอีก');
+  }
   return {...result,view:currentVoiceContext(false)};
 }
 
 async function openSummaryHistory(selectedId) {
   showDialog('summary-history',modalHeader(tr('สรุปที่เก็บไว้'),tr('แต่ละฉบับมีเวลาและบันทึกต้นทางให้ทบทวน'))+tr('<div id="summary-archive" class="summary-archive" role="status">กำลังเปิดสรุป…</div>'),'archive-modal');
   const host=document.querySelector('#summary-archive');
-  try {const reports=await workspace.summaries();if(selectedId && !reports.some(report=>report.id===selectedId))throw new Error(tr('ไม่พบสรุปฉบับนี้ค่ะ'));if(host.isConnected){host.innerHTML=summaryArchiveMarkup(selectedId?reports.filter(report=>report.id===selectedId):reports);if(selectedId)host.querySelector('.saved-summary')?.setAttribute('open','');}return reports;}
+  try {const reports=await workspace.summaries();let reviews=null;try{reviews=(await requestJSON('/api/care-workflow',{operation:'load'})).reviews;}catch{}if(selectedId && !reports.some(report=>report.id===selectedId))throw new Error(tr('ไม่พบสรุปฉบับนี้ค่ะ'));if(host.isConnected){host.innerHTML=summaryArchiveMarkup(selectedId?reports.filter(report=>report.id===selectedId):reports,reviews);if(selectedId)host.querySelector('.saved-summary')?.setAttribute('open','');}return reports;}
   catch(error){if(host.isConnected)host.textContent=error.message;throw error;}
 }
 workspace=new WorkspaceClient(state,{
@@ -951,7 +1125,7 @@ workspace=new WorkspaceClient(state,{
     if(status){status.dataset.phase=phase;status.innerHTML=phase==='saved'?tr('เก็บในพื้นที่ครอบครัวแล้ว'):phase==='saving'?tr('กำลังบันทึก…'):phase==='loading'?tr('กำลังเปิดพื้นที่ครอบครัว…'):`${esc(message)} <button class="text-button" data-action="${workspace?.blocked?'storage-latest':'storage-retry'}">${workspace?.blocked?tr('สำรองฉบับนี้ แล้วเปิดฉบับล่าสุด'):tr('ลองอีกครั้ง')}</button>`;}
   }
 });
-workspace.start();
+workspace.start().then(async()=>{if(!ui.sharedAccess){try{ui.careWorkflow=await requestJSON('/api/care-workflow',{operation:'load'});render();}catch{}}});
 
 async function updateAudioProfile(profile){
   const result=await voice.setAudioProfile(profile);

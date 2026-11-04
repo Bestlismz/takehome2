@@ -384,6 +384,46 @@
         "en",
         null
       ]
+    },
+    "section": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "plans",
+        "handover",
+        "review",
+        "access",
+        null
+      ]
+    },
+    "assignee": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 100
+    },
+    "draftJson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 50000
+    },
+    "decision": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "approved",
+        "rejected",
+        "reviewed",
+        "needs_revision",
+        null
+      ]
     }
   },
   "actions": [
@@ -1073,26 +1113,6 @@
       "notes": "ใช้ id จาก record.list อ่านทวนชื่อและเวลาก่อนยืนยัน ลบข้อมูลตัวอย่างไม่ได้"
     },
     {
-      "action": "activity.open",
-      "label": "ดูงานที่ลูกหลานกำลังทำ",
-      "family": "conversation",
-      "allowed": [],
-      "required": [],
-      "mutation": false,
-      "confirmation": "none",
-      "notes": ""
-    },
-    {
-      "action": "activity.close",
-      "label": "ย่องานที่ลูกหลานกำลังทำ",
-      "family": "conversation",
-      "allowed": [],
-      "required": [],
-      "mutation": false,
-      "confirmation": "none",
-      "notes": ""
-    },
-    {
       "action": "web.search",
       "label": "ค้นเว็บไซต์สาธารณะพร้อมแหล่งอ้างอิง",
       "family": "knowledge",
@@ -1176,6 +1196,232 @@
       "mutation": false,
       "confirmation": "none",
       "notes": "Use th for Thai or en for English. Changes the current voice session without disconnecting."
+    },
+    {
+      "action": "telephony.status",
+      "label": "ตรวจการเชื่อมต่อบริการโทรศัพท์",
+      "family": "telephony",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Returns provider setup status only. Never claims a real call without provider response."
+    },
+    {
+      "action": "telephony.test",
+      "label": "โทรทดสอบคำทักทายหนึ่งสาย",
+      "family": "telephony",
+      "allowed": [
+        "confirmed"
+      ],
+      "required": [],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "One outbound greeting-only test to a server-allowlisted number. Charges may apply. Read back scope, then require one later spoken confirmation. No arbitrary destination or medical data. Not a realtime AI conversation. Never retry automatically."
+    },
+    {
+      "action": "bp.open",
+      "label": "เปิดรับค่าความดันจากเครื่องวัด",
+      "family": "care-workflow",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "bp.read_display",
+      "label": "อ่านหน้าจอเครื่องวัดความดัน",
+      "family": "care-workflow",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "bp.close",
+      "label": "ปิดแผงความดัน",
+      "family": "care-workflow",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "care_workflow.open",
+      "label": "เปิดงานดูแลต่อเนื่อง",
+      "family": "care-workflow",
+      "allowed": [
+        "section"
+      ],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "care_workflow.status",
+      "label": "อ่านแผนยา งานส่งต่อ และสิทธิ์",
+      "family": "care-workflow",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "handover.add",
+      "label": "ส่งต่องานผู้ดูแล",
+      "family": "care-workflow",
+      "allowed": [
+        "text",
+        "assignee",
+        "confirmed",
+        "id"
+      ],
+      "required": [
+        "text",
+        "assignee"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure. Optional id references an existing confirmed health record to retain source evidence."
+    },
+    {
+      "action": "handover.complete",
+      "label": "รับช่วงงานดูแลเสร็จแล้ว",
+      "family": "care-workflow",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "medication_plan.submit",
+      "label": "ส่งร่างแผนยาให้ผู้ทบทวน",
+      "family": "care-workflow",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "access.revoke",
+      "label": "เพิกถอนลิงก์สรุปครอบครัว",
+      "family": "care-workflow",
+      "allowed": [
+        "id",
+        "confirmed"
+      ],
+      "required": [
+        "id"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status to get existing ids before changing an item. Never invent clinician review or medication orders. Bluetooth device selection and document selection require an explicit user gesture. bp.read_display transcribes a real cuff display, never face-only blood pressure."
+    },
+    {
+      "action": "care_workflow.field.set",
+      "label": "กรอกช่องร่างที่เปิดด้วยเสียง",
+      "family": "care-workflow",
+      "allowed": [
+        "field",
+        "value",
+        "id"
+      ],
+      "required": [
+        "field",
+        "value"
+      ],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
+    },
+    {
+      "action": "care_workflow.extract",
+      "label": "อ่านภาพหรือข้อความเอกสารที่เลือก",
+      "family": "care-workflow",
+      "allowed": [],
+      "required": [],
+      "mutation": false,
+      "confirmation": "none",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
+    },
+    {
+      "action": "medication_plan.draft",
+      "label": "บันทึกร่างแผนยาที่อ่านทวน",
+      "family": "care-workflow",
+      "allowed": [
+        "draftJson",
+        "confirmed"
+      ],
+      "required": [],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
+    },
+    {
+      "action": "access.create",
+      "label": "สร้างลิงก์สรุปครอบครัว",
+      "family": "care-workflow",
+      "allowed": [
+        "text",
+        "confirmed"
+      ],
+      "required": [
+        "text"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
+    },
+    {
+      "action": "medication_plan.review",
+      "label": "บันทึกผลทบทวนแผนยา",
+      "family": "care-workflow",
+      "allowed": [
+        "id",
+        "decision",
+        "confirmed"
+      ],
+      "required": [
+        "id",
+        "decision"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
+    },
+    {
+      "action": "report.review",
+      "label": "บันทึกผลทบทวนรายงาน",
+      "family": "care-workflow",
+      "allowed": [
+        "id",
+        "decision",
+        "confirmed"
+      ],
+      "required": [
+        "id",
+        "decision"
+      ],
+      "mutation": true,
+      "confirmation": "spoken",
+      "notes": "Use care_workflow.status for available field names and ids. Never ask for or supply a reviewer password through AI. It must be entered directly by the user in the visible form. Draft JSON is read from the visible form by the app; read back medicine names/doses and confirm once. Creating links returns no token to AI."
     }
   ],
   "externalTools": [

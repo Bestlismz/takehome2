@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ลูกหลาน · Investor presentation</title>
+  <link rel="icon" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="pitch.css">
+</head>
+<body>
+  <header class="masthead"><a class="wordmark" href="#1"><img src="../assets/luklaan-mascot.png" alt="">ลูกหลาน<span>Investor presentation</span></a><div class="header-actions"><span class="demo-label">ข้อมูลสาธิต</span><button id="notesToggle" aria-label="บทพูดประกอบ" title="บทพูด (N)"></button><button id="fullscreen" aria-label="เต็มหน้าจอ" title="เต็มหน้าจอ (F)"></button></div></header>
+  <main id="stage" aria-live="polite"></main>
+  <aside id="notes" hidden></aside>
+  <footer class="deck-controls"><div class="chapter" id="chapter"></div><nav id="dots" aria-label="เลือกสไลด์"></nav><div class="paging"><button id="prev" aria-label="สไลด์ก่อนหน้า"></button><span id="counter"></span><button id="next" aria-label="สไลด์ถัดไป"></button></div></footer>
+  <div class="progress"><div id="progress"></div></div>
+  <script type="module" src="pitch.js"></script>
+</body>
+</html>

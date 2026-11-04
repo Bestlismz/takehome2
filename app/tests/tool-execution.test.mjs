@@ -25,3 +25,10 @@ test('saving event fires only for a real persistence attempt and failure never r
  await assert.rejects(()=>durableToolResult({ok:true},{...options,mutation:true}),/offline/);
  assert.deepEqual(phases,['saving','flush']);
 });
+
+test('an operation committed by its own repository does not flush a second unrelated workspace write',async()=>{
+  let flushed=false;
+  const committed={ok:true,storage:{saved:true,revision:4}};
+  assert.equal(await durableToolResult(committed,{mutation:true,workspace:{flush:async()=>{flushed=true;throw new Error('unrelated stale workspace');}}}),committed);
+  assert.equal(flushed,false);
+});

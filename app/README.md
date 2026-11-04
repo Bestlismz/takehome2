@@ -22,7 +22,7 @@ Open http://localhost:5173 . The family overview is `/#care`; the physician summ
 ## Implemented
 
 - Official OpenAI Python SDK `2.54.0`: `client.responses.create` for food estimation/AI summaries and `client.realtime.client_secrets.create` for ephemeral credentials. The main key stays server-side. Browser WebRTC remains the audio/video transport; no SDK is needed to replace `RTCPeerConnection`.
-- 62 shared app voice actions plus camera and structured observation tools. Mutations require current-turn spoken confirmation. Same mounted conversation across navigation, minimizing and supplementary panels; microphone mute does not reconnect.
+- 84 shared app voice actions plus camera and structured observation tools. Mutations require current-turn spoken confirmation. Same mounted conversation across navigation, minimizing and supplementary panels; microphone mute does not reconnect.
 - Four mascot poses driven by listening/thinking/speaking/success, mic/AI audio amplitude, status-cloud feedback and reduced-motion support. No transcript wall or typed chat; conversational replies remain audio.
 - PostgreSQL persistence with psycopg 3, a bounded pool (1–6), normalized observation rows, JSONB payloads, workspace/time/kind indexes, revision checks and row locks. Confirmed records only; demo/unconfirmed records and raw audio/images are excluded.
 - Confirmed writes create versioned deterministic summaries. Explicit AI summaries read persisted records and save immutable report/evidence/model snapshots. The archive retains source evidence even if observations are later edited.
@@ -46,7 +46,7 @@ PATH="$PWD/.venv/bin:$PATH" node --test app/tests/*.test.mjs
 .venv/bin/python -m unittest discover -s app/tests -p 'test_*.py'
 ```
 
-PostgreSQL tests use isolated generated workspaces in `luklaan_test` and clean up only their own fixtures. SDK tests use official SDK serialization through a mocked HTTP transport, including redacted error handling. Database tests cover restart persistence, household isolation, concurrent conflicts, immutable evidence, deduplication, invalid readings and acknowledgement semantics. Browser checks cover persisted archive and responsive family/physician UI. The latest browser session reached the listening state through the SDK-backed Realtime setup. Real spoken Thai recognition accuracy, physical camera answers and end-to-end latency remain unverified. Live SDK Realtime credential creation and an AI report generated from fictional persisted observations both succeeded; the report snapshot was verified in PostgreSQL. Current automated checks: 99 JavaScript and 47 Python tests passed.
+PostgreSQL tests use isolated generated workspaces in `luklaan_test` and clean up only their own fixtures. SDK tests use official SDK serialization through a mocked HTTP transport, including redacted error handling. Database tests cover restart persistence, household isolation, concurrent conflicts, immutable evidence, deduplication, invalid readings and acknowledgement semantics. Browser checks cover persisted archive and responsive family/physician UI. The latest browser session reached the listening state through the SDK-backed Realtime setup. Real spoken Thai recognition accuracy, physical camera answers and end-to-end latency remain unverified. Live SDK Realtime credential creation and an AI report generated from fictional persisted observations both succeeded; the report snapshot was verified in PostgreSQL. Current automated checks: 134 JavaScript and 69 Python tests passed.
 
 ## Voice and knowledge increment
 
@@ -78,10 +78,16 @@ The home screen now prioritizes one conversation entry and two navigation shortc
 
 ## Voice control and visible tasks
 
-The app registry exposes 62 validated commands plus camera, health observation, and retrieval tools. The activity panel shows the actual target, page, confirmation, persistence attempt, and result. Calendar drafts and stored summaries can be inspected and operated through voice. Read the [spoken test script](VOICE-TEST-SCRIPT.md) and [coverage and limits](research/2026-11-04-VOICE-CONTROL-COVERAGE.md). Registry coverage does not guarantee recognition of every utterance.
+The app registry exposes 84 validated commands plus camera, health observation, and retrieval tools. A compact thought bubble beside the mascot shows the current task. Its optional details preserve the actual target, confirmation, persistence attempt, result and source links. Calendar drafts and stored summaries can be inspected and operated through voice. Read the [spoken test script](VOICE-TEST-SCRIPT.md) and [coverage and limits](research/2026-11-04-VOICE-CONTROL-COVERAGE.md). Registry coverage does not guarantee recognition of every utterance.
 
 ## Settings and English
 
 Open Settings to choose Thai or English, larger text, and a speaker, headphones, or noisy-surroundings audio profile. The language choice persists in PostgreSQL. Voice commands include “Switch to English” and “เปลี่ยนเป็นภาษาไทย”. Switching during a call updates the existing Realtime session. Owned UI text and display dates change language; personal notes and archived reports keep their original wording. New AI summaries and meal explanations use the selected language.
 
 English audio smoke check with the approved local API setup: `.venv/bin/python app/scripts/preview_voice.py --language en --output /tmp/luklaan-english.wav`. This opt-in check makes a paid provider call and does not record a microphone.
+
+## Camera pulse and phone connection
+
+The [camera pulse experiment](research/2026-11-04-CAMERA-VITALS.md) processes fingertip camera frames locally. It does not measure blood pressure or create a clinical record. Library acceptance is a signal-quality check, not clinical validation; real-device accuracy has not been validated for Luklaan.
+
+The [Twilio adapter](TELEPHONY.md) supports one allowlisted greeting-only test after explicit setup and confirmation. It is disabled by default. Scheduled PSTN reminders and realtime AI conversation over a phone number are not implemented.

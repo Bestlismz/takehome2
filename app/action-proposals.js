@@ -6,7 +6,8 @@ function canonical(value) {
   return value;
 }
 export function sameProposal(left,right){return JSON.stringify(canonical(left))===JSON.stringify(canonical(right));}
-export function proposeAction(call,context,catalog){
+export function proposeAction(call,context,catalog,previous){
+  if(previous && previous.session===context.session && (context.now ?? Date.now())-previous.createdAt<=300000 && sameProposal(call,previous.call))return previous;
   return {...stageAppAction(call,catalog),turn:context.currentTurn,session:context.session,createdAt:context.now ?? Date.now()};
 }
 export function authorizeProposal(call,proposal,context,catalog){

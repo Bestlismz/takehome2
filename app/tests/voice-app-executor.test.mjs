@@ -16,7 +16,7 @@ function executor(){
   const host={isConnected:true,innerHTML:'',querySelector:()=>({setAttribute(){}})};
   const context=vm.createContext({
     tr,html,intlLocale,getLanguage,state:{calendarPlans:[]},ui:{conversationId:'test-session',userTurn:1,transcriptTurn:1,lastUserTranscript:'ช่วยเพิ่มนัด'},
-    workspace:{ready:true,blocked:false,summaries:async()=>[]},crypto:{randomUUID},
+    requestJSON:async()=>({reviews:[]}),workspace:{ready:true,blocked:false,summaries:async()=>[]},crypto:{randomUUID},
     loadAppCommandCatalog:async()=>catalog,validateAppAction,requiresSpokenConfirmation,isExplicitAppConfirmation,authorizeAppAction,authorizeProposal,proposeAction,normalizeCalendarPlan,storedSummaryList,storedSummaryRead,
     proposalReadback:call=>`${call.title || call.id} ${call.date || ''} ${call.at || ''}`,saveState(){},render(){},validCalendarDate,calendarFormMarkup,dateKey:()=>'2026-11-04',
     selectCalendarDate(date){context.ui.calendarDate=date;},currentVoiceContext:()=>({route:'calendar',interface:context.visibleInterface || {form:null}}),
@@ -80,4 +80,75 @@ test('source connection failures reach the voice executor as failures',async()=>
   const result=await act({action:'knowledge.sources'});
   assert.equal(result.ok,false);
   assert.equal(result.error,'sources unavailable');
+});
+
+
+test('one spoken confirmation executes the pending appointment without another form or model flag',async()=>{
+ for(const confirmed of [undefined,false,true]){
+  const {context,act,host}=executor();
+  await act({action:'calendar.add',date:'2026-11-05',at:'09:00',title:'นัดครั้งเดียว',confirmed:false});
+  context.ui.userTurn=2;context.ui.transcriptTurn=2;context.ui.lastUserTranscript='ยืนยันค่ะ';
+  const result=await act({action:'health.confirm',...(confirmed===undefined?{}:{confirmed})});
+  assert.equal(result.requiresConfirmation,undefined);
+  assert.equal(context.state.calendarPlans.length,1);
+  assert.equal(context.state.calendarPlans[0].title,'นัดครั้งเดียว');
+  assert.equal(context.ui.pendingAppAction,null);
+  assert.equal(host.innerHTML,'');
+  assert.match(result.instruction,/ไม่ถามยืนยันซ้ำ/);
+ }
+});
+
+test('an unconfirmed retry does not consume the original proposal or require another round',async()=>{
+ const {context,act}=executor();
+ const add={action:'calendar.add',date:'2026-11-05',at:'09:00',title:'นัดเดิม',confirmed:false};
+ await act(add);
+ const original=context.ui.pendingAppAction;
+ context.ui.userTurn=2;context.ui.transcriptTurn=1;context.ui.lastUserTranscript='ยืนยันค่ะ';
+ assert.equal((await act(add)).requiresConfirmation,true);
+ assert.equal(context.ui.pendingAppAction,original);
+ assert.equal(context.state.calendarPlans.length,0);
+ context.ui.transcriptTurn=2;
+ assert.equal((await act(add)).requiresConfirmation,undefined);
+ assert.equal(context.state.calendarPlans.length,1);
+});
+
+test('same-turn, negative and changed-payload confirmations still cannot write',async()=>{
+ const {context,act}=executor();
+ const add={action:'calendar.add',date:'2026-11-05',at:'09:00',title:'นัดเดิม',confirmed:false};
+ await act(add);
+ context.ui.lastUserTranscript='ยืนยันค่ะ';
+ assert.equal((await act({action:'health.confirm'})).requiresConfirmation,true);
+ context.ui.userTurn=2;context.ui.transcriptTurn=2;context.ui.lastUserTranscript='ไม่ยืนยันค่ะ';
+ assert.equal((await act({action:'health.confirm',confirmed:true})).requiresConfirmation,true);
+ context.ui.lastUserTranscript='ยืนยันค่ะ';
+ assert.equal((await act({...add,at:'10:00',confirmed:true})).requiresConfirmation,true);
+ assert.equal(context.state.calendarPlans.length,0);
+ context.ui.userTurn=3;context.ui.transcriptTurn=3;
+ await act({action:'health.confirm'});
+ assert.equal(context.state.calendarPlans.length,1);
+ assert.equal(context.state.calendarPlans[0].at,'10:00');
+});
+
+test('voice saves a visible medication draft once, but edits after readback require a new confirmation',async()=>{
+  for(const editAfterReadback of [false,true]){
+    const {context,act}=executor();
+    let draft={title:'Fictional document',sourceText:'fixture',medications:[{name:'Fictional medicine',dose:'test one',instructions:'Not for use',uncertain:false}],uncertainties:[]};
+    const written=[];
+    context.modal={querySelector:()=>({})};
+    context.FormData=function(form){return form;};
+    context.draftFromValues=()=>JSON.parse(JSON.stringify(draft));
+    context.performCareWorkflow=async(operation,payload)=>{written.push({operation,payload});return {ok:true,storage:{saved:true,revision:1}};};
+    assert.equal((await act({action:'medication_plan.draft'})).requiresConfirmation,true);
+    if(editAfterReadback)draft={...draft,title:'Changed document'};
+    context.ui.userTurn=2;context.ui.transcriptTurn=2;context.ui.lastUserTranscript='ยืนยันค่ะ';
+    const result=await act({action:'health.confirm'});
+    if(editAfterReadback){
+      assert.equal(result.requiresConfirmation,true);assert.equal(written.length,0);
+      context.ui.userTurn=3;context.ui.transcriptTurn=3;
+      await act({action:'health.confirm'});
+    }
+    assert.equal(written.length,1);
+    assert.equal(written[0].operation,'plan.draft');
+    assert.equal(written[0].payload.title,draft.title);
+  }
 });

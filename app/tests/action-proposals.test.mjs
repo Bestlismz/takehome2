@@ -50,3 +50,16 @@ test('negated and mixed utterances never authorize destructive changes',async()=
   assert.throws(()=>authorizeProposal({action:'record.delete',id:'record',confirmed:true},pending,{...context,currentTurn:4,transcriptTurn:4,transcript:text},catalog));
  }
 });
+
+
+test('identical tool retries retain the original confirmation turn and expiry',()=>{
+ const pending=proposeAction(call,context,catalog);
+ const next={...context,currentTurn:4,transcriptTurn:4,now:20000};
+ assert.equal(proposeAction({...call,confirmed:true},next,catalog,pending),pending);
+ assert.equal(authorizeProposal({...call,confirmed:true},pending,next,catalog).title,'นัดส่วนตัว');
+ const changed=proposeAction({...call,at:'15:00'},next,catalog,pending);
+ assert.equal(changed.turn,4);
+ assert.equal(changed.call.at,'15:00');
+ assert.notEqual(proposeAction(call,{...next,session:11},catalog,pending),pending);
+ assert.notEqual(proposeAction(call,{...next,now:311000},catalog,pending),pending);
+});
