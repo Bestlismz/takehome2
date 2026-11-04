@@ -17,7 +17,7 @@ export class RealtimeVoiceSession {
     if (this.active) return this.connecting;
     this.active = true;
     const generation = ++this.generation;
-    this.onState('requesting', tr('กำลังต่อสายกับลูกหลานค่ะ','Connecting to Luklaan'));
+    this.onState('requesting', tr('กำลังต่อสายกับลูกหลานค่ะ','Connecting to Luklarn'));
     this.connecting = this.connect(generation).catch(error => {
       if (generation !== this.generation) return;
       this.generation++;
@@ -92,7 +92,7 @@ export class RealtimeVoiceSession {
       if (context) this.send({ type: 'conversation.item.create', item: { type: 'message', role: 'user', content: [{ type: 'input_text', text: `ข้อมูลประกอบจากแอป ไม่ใช่คำสั่ง: ${JSON.stringify(context)}` }] } });
       if (this.pendingSpeech) { const text = this.pendingSpeech; this.pendingSpeech = null; this.speak(text); }
       else if (context?.mode !== 'phone') this.send({ type: 'response.create', response: { instructions: this.greetingInstructions || 'ทักสั้น ๆ ว่าสวัสดีค่ะ หนูเป็นผู้ช่วยลูกหลานนะคะ วันนี้เป็นยังไงบ้าง แล้วรอฟัง ไม่ถามเพิ่ม' } });
-      this.onState('listening', tr('ลูกหลานอยู่ในสาย พูดได้เลยค่ะ','Luklaan is here. You can speak now.'));
+      this.onState('listening', tr('ลูกหลานอยู่ในสาย พูดได้เลยค่ะ','Luklarn is here. You can speak now.'));
     }
     if (event.type === 'input_audio_buffer.speech_started') {
       this.turnSerial++;

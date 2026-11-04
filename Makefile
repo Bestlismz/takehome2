@@ -8,11 +8,11 @@ COMPOSE = docker compose $(if $(wildcard .env.local),--env-file .env.local,)
 PORT ?= $(if $(LUKLAAN_PORT),$(LUKLAAN_PORT),5173)
 
 help:
-	@echo "Luklaan | ลูกหลาน"
+	@echo "Luklarn | ลูกหลาน"
 	@echo "  make setup        Install the pinned Python dependencies"
 	@echo "  make dev          Run the app at http://localhost:$(PORT)"
 	@echo "  make test         Run JavaScript and PostgreSQL-backed Python tests"
-	@echo "  make up           Build and start Luklaan with PostgreSQL in Docker"
+	@echo "  make up           Build and start Luklarn with PostgreSQL in Docker"
 	@echo "  make down         Stop Docker services and keep database data"
 	@echo "  make logs         Follow Docker service logs"
 	@echo "  make health       Check the app health endpoint"

@@ -1,6 +1,6 @@
 # Current implementation: ลูกหลาน, 4 November 2026
 
-This update supersedes earlier prototype boundaries below. The app now uses an original cut-paper mascot, a Python same-origin backend, real OpenAI Realtime WebRTC audio, sampled live-camera image input, structured food/glucose/adherence/symptom observations and seven-day physician summaries. It retains an in-page mock telephone channel; it does not dial carrier numbers. See [current README](README.md), [backend details](BACKEND.md) and [research](research/LUKLAAN-RESEARCH.md).
+This update supersedes earlier prototype boundaries below. The app now uses an original cut-paper mascot, a Python same-origin backend, real OpenAI Realtime WebRTC audio, sampled live-camera image input, structured food/glucose/adherence/symptom observations and seven-day physician summaries. It retains an in-page mock telephone channel; it does not dial carrier numbers. See [current README](README.md), [backend details](BACKEND.md) and [research](research/LUKLARN-RESEARCH.md).
 
 Three live provider smoke tests returned HTTP200: Realtime credential creation, food estimates and physician narrative. Browser food estimation also completed. Actual microphone/camera conversation remains unverified in the in-app browser because permission timed out. Patient accounts, hospital plan synchronization, a protected server-side medical-record store, clinical nutrition validation and physical phone testing are still outstanding. The current user's key is stored only in the approved ignored root .env.local and is not part of these sources.
 

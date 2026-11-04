@@ -21,6 +21,6 @@ Prove It Works drove checks against rendered screens and stored settings. All 98
 
 The browser was checked on all six main routes in English. The only remaining Thai content in the journal, family, and summary was the original personal symptom note. English was retained after reload. Larger text and headphones choices were also retained after reload, then restored to their prior values. Settings had no horizontal overflow at 320 and 390 pixels. Temporary viewport overrides were reset.
 
-A live Realtime audio check completed with the English greeting, "Hello, I'm your Luklaan AI assistant. How are you feeling today?" It generated audio through the official SDK without recording a microphone. Physical English speech recognition and acoustic performance were not evaluated in this task.
+A live Realtime audio check completed with the English greeting, "Hello, I'm your Luklarn AI assistant. How are you feeling today?" It generated audio through the official SDK without recording a microphone. Physical English speech recognition and acoustic performance were not evaluated in this task.
 
 Calls and remote sharing remain demonstrations. Operating system microphone and camera permissions remain user-controlled. No commit or push was requested.

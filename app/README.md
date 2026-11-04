@@ -1,4 +1,4 @@
-# Luklaan application notes
+# Luklarn application notes
 
 Family members help care for their loved ones. Older adults talk naturally; family members review confirmed observations, what needs attention and what to ask next. This is a local functional prototype, not a production clinical monitoring service.
 
@@ -88,6 +88,6 @@ English audio smoke check with the approved local API setup: `.venv/bin/python a
 
 ## Camera pulse and phone connection
 
-The [camera pulse experiment](research/2026-11-04-CAMERA-VITALS.md) processes fingertip camera frames locally. It does not measure blood pressure or create a clinical record. Library acceptance is a signal-quality check, not clinical validation; real-device accuracy has not been validated for Luklaan.
+The [camera pulse experiment](research/2026-11-04-CAMERA-VITALS.md) processes fingertip camera frames locally. It does not measure blood pressure or create a clinical record. Library acceptance is a signal-quality check, not clinical validation; real-device accuracy has not been validated for Luklarn.
 
 The [Twilio adapter](TELEPHONY.md) supports one allowlisted greeting-only test after explicit setup and confirmation. It is disabled by default. Scheduled PSTN reminders and realtime AI conversation over a phone number are not implemented.

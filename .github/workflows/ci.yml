@@ -1,4 +1,4 @@
-name: Luklaan checks
+name: Luklarn checks
 
 on:
   push:
@@ -57,7 +57,7 @@ jobs:
         run: node --test app/tests/*.test.mjs
       - name: Test API and PostgreSQL persistence
         run: python -m unittest discover -s app/tests -p 'test_*.py'
-      - name: Build Luklaan image
+      - name: Build Luklarn image
         run: docker build --tag luklaan:${{ github.sha }} .
       - name: Start image against the test database
         run: >-
@@ -95,7 +95,7 @@ jobs:
               result = json.load(response)
               assert result['revision'] == 0
               assert result['state']['events'] == []
-          print('Image serves Luklaan and reads PostgreSQL without an OpenAI key.')
+          print('Image serves Luklarn and reads PostgreSQL without an OpenAI key.')
           PY
       - name: Container diagnostics
         if: failure()

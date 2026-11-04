@@ -2,7 +2,7 @@
 
 Checked in Codex in-app browser on 4 November 2026.
 
-Design reference: existing cream/cobalt Luklaan app branding and approved `app/assets/luklaan-mascot.png`. This is an HTML adaptation of the sales narrative, with native interactive phone screens rather than static slide images.
+Design reference: existing cream/cobalt Luklarn app branding and approved `app/assets/luklaan-mascot.png`. This is an HTML adaptation of the sales narrative, with native interactive phone screens rather than static slide images.
 
 Checked all 11 slides at 1440×900: assets load, no horizontal overflow, text ends above the presentation footer. Checked 1366×768 and mobile390×844. On mobile the text and phone stack vertically and the page scrolls.
 

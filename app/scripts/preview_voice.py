@@ -27,7 +27,7 @@ async def preview(destination,sample,language="th"):
                 if sample=='greeting':
                     await connection.response.create(response={'instructions':delivery_for(language)['greetingInstructions']})
                 else:
-                    await connection.conversation.item.create(item={'type':'message','role':'assistant','content':[{'type':'output_text','text':'Hi, I am Luklaan, your AI companion. How are you feeling today?' if language=='en' else 'สวัสดีค่ะ หนูเป็นผู้ช่วยลูกหลานนะคะ วันนี้เป็นยังไงบ้าง'}]})
+                    await connection.conversation.item.create(item={'type':'message','role':'assistant','content':[{'type':'output_text','text':'Hi, I am Luklarn, your AI companion. How are you feeling today?' if language=='en' else 'สวัสดีค่ะ หนูเป็นผู้ช่วยลูกหลานนะคะ วันนี้เป็นยังไงบ้าง'}]})
                     await connection.conversation.item.create(item={'type':'message','role':'user','content':[{'type':'input_text','text':'Can you keep me company for a little while?' if language=='en' else 'อยู่เป็นเพื่อนหน่อย คุยเรื่องอะไรก็ได้'}]})
                     await connection.response.create()
                 async for event in connection:

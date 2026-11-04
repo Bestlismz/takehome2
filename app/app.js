@@ -175,12 +175,12 @@ function render() {
   if(ui.sharedAccess)return;
   setLanguage(state.language || getLanguage());
   document.documentElement.lang=getLanguage();
-  document.title=getLanguage()==='en'?'Luklaan · Care for the people we love':'ลูกหลาน · ช่วยดูแลคนที่เรารัก';
+  document.title=getLanguage()==='en'?'Luklarn · Care for the people we love':'ลูกหลาน · ช่วยดูแลคนที่เรารัก';
   document.querySelector('.skip-link').textContent=getLanguage()==='en'?'Skip to content':'ข้ามไปเนื้อหา';
   document.querySelector('#sidebar').setAttribute('aria-label',getLanguage()==='en'?'Main navigation':'เมนูหลัก');
   document.querySelector('#mobile-nav').setAttribute('aria-label',getLanguage()==='en'?'Mobile navigation':'เมนูมือถือ');
-  document.querySelector('#workspace-label').textContent=getLanguage()==='en'?'Luklaan preview':'พื้นที่ทดลองลูกหลาน';
-  document.querySelector('#voice-dock').setAttribute('aria-label',getLanguage()==='en'?'Call with Luklaan':'สายคุยกับลูกหลาน');
+  document.querySelector('#workspace-label').textContent=getLanguage()==='en'?'Luklarn preview':'พื้นที่ทดลองลูกหลาน';
+  document.querySelector('#voice-dock').setAttribute('aria-label',getLanguage()==='en'?'Call with Luklarn':'สายคุยกับลูกหลาน');
   const settingsStatus=document.querySelector('.settings-storage');
   if(settingsStatus){const c=settingsCopy(getLanguage());settingsStatus.dataset.state=workspace?.pending?'pending':workspace?.ready?'ready':'loading';settingsStatus.innerHTML='<i aria-hidden="true"></i>'+esc(workspace?.pending?c.pending:workspace?.ready?c.saved:c.offline);}
   const content=document.querySelector('#content');
@@ -477,10 +477,10 @@ phoneExperience = createPhoneExperience({ state, modal, showDialog, closeDialog,
 function refreshConversationLocale() {
   if(!ui.voicePresentation)return;
   const caption=conversationModal.querySelector('#voice-transcript');
-  if(caption)caption.textContent=ui.voicePhase==='requesting'?tr('กำลังต่อสายกับลูกหลาน','Connecting to Luklaan'):ui.voicePhase==='error'?tr('ยังต่อสายไม่ได้ค่ะ','The call could not connect'):ui.voicePhase==='paused'?tr('คุยต่อเมื่อพร้อม','Continue when you are ready'):tr('ลูกหลานอยู่ในสาย','Luklaan is here with you');
+  if(caption)caption.textContent=ui.voicePhase==='requesting'?tr('กำลังต่อสายกับลูกหลาน','Connecting to Luklarn'):ui.voicePhase==='error'?tr('ยังต่อสายไม่ได้ค่ะ','The call could not connect'):ui.voicePhase==='paused'?tr('คุยต่อเมื่อพร้อม','Continue when you are ready'):tr('ลูกหลานอยู่ในสาย','Luklarn is here with you');
   const header=conversationModal.querySelector('.conversation-header');
   if(header){
-    header.querySelector('h2').textContent=tr('ลูกหลาน','Luklaan');
+    header.querySelector('h2').textContent=tr('ลูกหลาน','Luklarn');
     header.querySelector('div > span').textContent=tr('AI · เสียงและภาพเมื่อเปิดกล้องส่งให้ OpenAI','AI · Audio and enabled camera images are sent to OpenAI');
     const presence=header.querySelector('.conversation-presence');
     if(presence)presence.innerHTML='<i></i> '+tr('อยู่ในสาย','In the call');

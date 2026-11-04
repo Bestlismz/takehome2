@@ -19,7 +19,7 @@ class LanguageConfiguration(unittest.TestCase):
             result=server.handle_api('/api/voice-language',{'language':'en','audioProfile':'noisy'})
         self.assertEqual(result['language'],'en')
         self.assertEqual(result['audioInput']['transcription']['language'],'en')
-        self.assertIn("Hello, I'm your Luklaan AI assistant",result['greetingInstructions'])
+        self.assertIn("Hello, I'm your Luklarn AI assistant",result['greetingInstructions'])
         self.assertEqual(result['audioInput']['turn_detection']['type'],'server_vad')
     def test_invalid_language_rejected_and_language_setting_preserved(self):
         self.assertEqual(valid_state({'events':[],'language':'en'})['language'],'en')

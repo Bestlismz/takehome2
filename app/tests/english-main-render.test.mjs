@@ -18,7 +18,7 @@ test('English home renders translated owned content and preserves a personal Tha
  const empty=renderHome();
  assert.doesNotMatch(empty,/[\u0e00-\u0e7f]/);
  assert.match(empty,/Somjai/);
- assert.match(empty,/Luklaan/);
+ assert.match(empty,/Luklarn/);
  const title='นัดคุณแม่ <script>ไม่ใช่โค้ด</script>';
  const withPlan=renderHome([{id:'personal-id',date:'2026-11-04',at:'09:00',title,status:'active'}]);
  assert.match(withPlan,/นัดคุณแม่ &lt;script&gt;ไม่ใช่โค้ด&lt;\/script&gt;/);

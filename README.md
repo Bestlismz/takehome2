@@ -1,10 +1,10 @@
-# ลูกหลาน · Luklaan
+# ลูกหลาน · Luklarn
 
-<img src="app/assets/luklaan-mascot.png" alt="Luklaan mascot" width="112">
+<img src="app/assets/luklaan-mascot.png" alt="Luklarn mascot" width="112">
 
 **ลูกหลานช่วยดูแลคนที่เรารัก** ผู้สูงอายุเล่าเรื่องกิน ยา อาการ และค่าจากเครื่องวัดด้วยเสียง ครอบครัวทบทวนสิ่งที่ต้องติดตาม และเตรียมสรุปก่อนพบแพทย์ได้ในแอปเดียว รองรับภาษาไทยและอังกฤษ
 
-Luklaan is the main application in this repository. The earlier AI-Ops take-home project is preserved separately in [archive/aiops-takehome](archive/aiops-takehome/README.md).
+Luklarn is the main application in this repository. The earlier AI-Ops take-home project is preserved separately in [archive/aiops-takehome](archive/aiops-takehome/README.md).
 
 ## Run locally
 
@@ -36,7 +36,7 @@ make logs
 make down
 ```
 
-This starts Luklaan and PostgreSQL. The web port is published on `127.0.0.1:5173`; PostgreSQL stays on the container network. `make down` keeps database data. Docker uses its own `luklaan-data` volume, separate from native PostgreSQL databases.
+This starts Luklarn and PostgreSQL. The web port is published on `127.0.0.1:5173`; PostgreSQL stays on the container network. `make down` keeps database data. Docker uses its own `luklaan-data` volume, separate from native PostgreSQL databases.
 
 If the native app already uses port 5173, choose another port:
 
@@ -87,8 +87,8 @@ Live provider checks are optional and use the approved local API configuration:
 | `app/tests/` | Browser-logic, API, SDK-contract, and database tests |
 | `app/research/` | Product, design, and technical research |
 | `docs/` | Repository structure and migration record |
-| `Dockerfile`, `docker-compose.yml` | Luklaan image and local app/database stack |
-| `.github/workflows/ci.yml` | Luklaan test and image checks |
+| `Dockerfile`, `docker-compose.yml` | Luklarn image and local app/database stack |
+| `.github/workflows/ci.yml` | Luklarn test and image checks |
 | `archive/aiops-takehome/` | Preserved previous project, outside the main runtime |
 
 Development details are in [app/README.md](app/README.md). The repository promotion is recorded in [docs/PROJECT-PROMOTION.md](docs/PROJECT-PROMOTION.md).

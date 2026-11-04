@@ -1,4 +1,4 @@
-# Camera vital signs for Luklaan
+# Camera vital signs for Luklarn
 
 Researched 4 November 2026. Scope: an optional browser-local pulse experiment, and whether camera blood pressure is ready to become a clinical record.
 
@@ -30,9 +30,9 @@ Before a BP model is used in care, evaluate it against a validated reference acr
 
 `camera-pulse.js` exports `CameraPulseSession`. The app supplies an optional video element and receives snapshots with `phase`, `heartRate`, `quality`, `message`, `experimental: true`, `source: 'camera-fingertip-ppg'` and `persisted: false`. The numeric field is null for rejected quality, non-finite or out-of-band output. A successful estimate stops the camera immediately; explicit stop clears the result. Late async starts and events cannot reopen a stopped session.
 
-This module must run separately from the conversational camera. Stop the current camera stream before starting it. The user explicitly requests the experiment, and grants camera permission through the browser when required. The upstream library uses rear-camera fingertip contact, not a facial scan. A phone with a rear camera and controllable flash is the intended setup; desktop webcam and in-app browsers may not be suitable. These [device limitations](https://github.com/sontakey/ppg-js#browser-and-device-support) are upstream claims, not verified device coverage for Luklaan.
+This module must run separately from the conversational camera. Stop the current camera stream before starting it. The user explicitly requests the experiment, and grants camera permission through the browser when required. The upstream library uses rear-camera fingertip contact, not a facial scan. A phone with a rear camera and controllable flash is the intended setup; desktop webcam and in-app browsers may not be suitable. These [device limitations](https://github.com/sontakey/ppg-js#browser-and-device-support) are upstream claims, not verified device coverage for Luklarn.
 
-The vendored package's capture path was inspected. `stop()` releases its tracks, timers, page watchers and video source; `destroy()` calls `stop()`. No fetch, XHR or WebSocket calls were found in the vendored browser build. Debug persistence is disabled. The library still holds bounded signal diagnostics in memory during capture. Luklaan does not export them or call its download/debug APIs.
+The vendored package's capture path was inspected. `stop()` releases its tracks, timers, page watchers and video source; `destroy()` calls `stop()`. No fetch, XHR or WebSocket calls were found in the vendored browser build. Debug persistence is disabled. The library still holds bounded signal diagnostics in memory during capture. Luklarn does not export them or call its download/debug APIs.
 
 ## Reproducibility and tests
 

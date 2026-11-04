@@ -74,7 +74,7 @@ After 30 seconds without an answer, the demo records an unanswered call with no 
 
 ## ลูกหลาน: research, art and actual AI integration, 4 November 2026
 
-Re-read the latest source document. Research and references are captured in research/LUKLAAN-RESEARCH.md. Compared cut-paper editorial character design with clay/glass; selected original two-character paper mascot, terracotta/butter/cobalt accents, large tactile controls and reduced motion. New home, shared conversations and existing pages retain a consistent system. Added a distinct physician page and print view.
+Re-read the latest source document. Research and references are captured in research/LUKLARN-RESEARCH.md. Compared cut-paper editorial character design with clay/glass; selected original two-character paper mascot, terracotta/butter/cobalt accents, large tactile controls and reduced motion. New home, shared conversations and existing pages retain a consistent system. Added a distinct physician page and print view.
 
 Architecture compared backend PCM proxy with browser WebRTC and chose short-lived Realtime client credentials from a same-origin Python server (now using the official OpenAI SDK). The permanent API key is in the user-approved ignored root .env.local, mode600. The server serves only frontend files, blocks private paths and foreign origins, bounds request bodies and redacts upstream failures. Images are sent only with enabled camera; provider image conversation items are limited to the latest two. Replies are actual provider audio; static mock phone ringing remains local.
 
